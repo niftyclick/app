@@ -15,7 +15,9 @@ Future<void> main() async {
 
   runApp(
     MaterialApp(
-      theme: ThemeData.dark(),
+      theme: ThemeData(
+        primarySwatch: Colors.red,
+      ),
       home: CameraPreviewScreen(
         // Pass the appropriate camera to the TakePictureScreen widget.
         camera: firstCamera,
