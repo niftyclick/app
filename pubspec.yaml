@@ -40,6 +40,8 @@ dependencies:
   path: ^1.8.2
   path_provider: ^2.0.11
   http: ^0.13.5
+  url_launcher: ^6.1.6
+  image_picker: ^0.8.6
 
 dev_dependencies:
   flutter_test:
