@@ -40,7 +40,6 @@ class _CameraPreviewScreenState extends State<CameraPreviewScreen> {
     super.dispose();
   }
 
-  int? selectedCameraIdx;
 
   @override
   Widget build(BuildContext context) {

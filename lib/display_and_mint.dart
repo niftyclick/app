@@ -111,7 +111,7 @@ class _DisplayAndMintState extends State<DisplayAndMint> {
             children: [
               Image.file(
                 File(widget.imagePath),
-                height: 500,
+                height: 450,
                 width: 400,
               ),
               const SizedBox(height: 40),
@@ -136,6 +136,8 @@ class _DisplayAndMintState extends State<DisplayAndMint> {
                   hintStyle: TextStyle(color: Colors.grey),
                 ),
               ),
+              const SizedBox(height: 20),
+
               ElevatedButton(
                 onPressed: () async {
                   print("Uploading Image.");
