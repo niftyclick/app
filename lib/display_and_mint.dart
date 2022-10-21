@@ -9,10 +9,12 @@ import 'package:url_launcher/url_launcher.dart';
 
 class DisplayAndMint extends StatefulWidget {
   final String imagePath;
+  final String publicKey;
 
   const DisplayAndMint({
     Key? key,
     required this.imagePath,
+    required this.publicKey,
   }) : super(key: key);
 
   @override
@@ -31,7 +33,7 @@ class _DisplayAndMintState extends State<DisplayAndMint> {
     'Content-Type': 'multipart/form-data',
     'Accept': 'application/json',
     'Authorization':
-        'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweEUwYTI2OTJGM0I2MDNhMTNCYjQyNzMxNTE1ODBDMzZCNTFlODlDY2YiLCJpc3MiOiJ3ZWIzLXN0b3JhZ2UiLCJpYXQiOjE2NjU5MjU5Nzg2ODUsIm5hbWUiOiJuaWZ0eS10cmlhbCJ9.4Bn__ntHrZmdwj5tMxdFa9UiEW6GxBLTB4hT2USNuCc',
+        'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweGQyNzBiNTY0Q0U2MjViNmM1RjA3MGY0MDMxNWQzZDZCOUU5MDg1NmMiLCJpc3MiOiJ3ZWIzLXN0b3JhZ2UiLCJpYXQiOjE2NjA1NjUyOTYzNzEsIm5hbWUiOiJpbWFnZXMifQ.X4HTihDzCJGTEDX894LoCKymlZoRlvFDNa_IhyaBnMo',
   };
 
   var ipfsEndpoint = Uri.https("api.web3.storage", "/upload");
@@ -111,8 +113,8 @@ class _DisplayAndMintState extends State<DisplayAndMint> {
             children: [
               Image.file(
                 File(widget.imagePath),
-                height: 450,
-                width: 400,
+                height: 400,
+                width: 350,
               ),
               const SizedBox(height: 40),
               TextField(
@@ -137,7 +139,6 @@ class _DisplayAndMintState extends State<DisplayAndMint> {
                 ),
               ),
               const SizedBox(height: 20),
-
               ElevatedButton(
                 onPressed: () async {
                   print("Uploading Image.");
@@ -161,12 +162,10 @@ class _DisplayAndMintState extends State<DisplayAndMint> {
                     print(res.statusCode);
                   }
                   print("Uploading JSON.");
-                  imageIpfs != ""
-                      ? await writeCounter(await makeJsonString(
-                          _name.text,
-                          _description.text,
-                          "35YzKveuqytHjgmgmKgXHi295t7LkDGRCm3xN12tCwRY",
-                          imageIpfs))
+                  print(widget.publicKey);
+                  imageIpfs != "" && widget.publicKey != ""
+                      ? await writeCounter(await makeJsonString(_name.text,
+                          _description.text, widget.publicKey, imageIpfs))
                       : print("No image");
                   final jsonFile = await _localFile;
                   setState(() {});
@@ -190,38 +189,45 @@ class _DisplayAndMintState extends State<DisplayAndMint> {
 
                   print("Uploaded JSON to IPFS.");
 
-                  print("Uploading NFT to Solana.");
+                  print("Creating NFT using CandyPay API.");
 
-                  var candyPayResponse = await http.post(
-                    candyPayEndpoint,
-                    headers: <String, String>{
-                      "Content-Type": "application/json",
-                      "Authorization": "Bearer xDBywyRp4y75oVxYQBby3",
-                    },
-                    body: jsonEncode(<String, dynamic>{
-                      "name": _name.text,
-                      "symbol": getSymbol(_name.text),
-                      "uri": jsonIpfs,
-                      "collection_size": 1,
-                      "seller_fee": 10,
-                      "network": "devnet",
-                      "label": "Niftyclick"
-                    }),
-                  );
+                  if (jsonIpfs != "") {
+                    var candyPayResponse = await http.post(
+                      candyPayEndpoint,
+                      headers: <String, String>{
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer xDBywyRp4y75oVxYQBby3',
+                      },
+                      body: jsonEncode(<String, dynamic>{
+                        "name": _name.text,
+                        "symbol": getSymbol(_name.text),
+                        "uri": jsonIpfs,
+                        "collection_size": 1,
+                        "seller_fee": 10,
+                        "network": "devnet",
+                        "label": "Niftyclick"
+                      }),
+                    );
 
-                  if (candyPayResponse.statusCode == 200) {
-                    var body = candyPayResponse.body;
-                    print(body);
-                    setState(() {
-                      txUrl = jsonDecode(body)["metadata"]["solana_url"];
-                    });
+                    if (candyPayResponse.statusCode == 200) {
+                      var body = candyPayResponse.body;
+                      print(body);
+                      setState(() {
+                        txUrl = jsonDecode(body)["metadata"]["solana_url"];
+                      });
+                    } else {
+                      print(candyPayResponse.statusCode);
+                    }
+
+                    if (txUrl != "") {
+                      print("Got Transaction. Opening Phantom...");
+                      print(txUrl);
+                      await launchUrl(Uri.parse(txUrl));
+                      print("Minting Done.");
+                    }
                   } else {
-                    print(candyPayResponse.reasonPhrase);
+                    print("No JSON");
                   }
-
-                  print("Got Transaction. Opening Phantom...");
-                  await launchUrl(Uri.parse(txUrl));
-                  print("Minting Done.");
                 },
                 child: const Text('Mint as NFT'),
               ),
