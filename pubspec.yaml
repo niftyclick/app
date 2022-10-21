@@ -40,8 +40,14 @@ dependencies:
   path: ^1.8.2
   path_provider: ^2.0.11
   http: ^0.13.5
-  url_launcher: ^6.1.6
+  url_launcher: ^6.1.5
   image_picker: ^0.8.6
+  bs58: ^1.0.2
+  pinenacl: ^0.5.1
+  uni_links: ^0.5.1
+  app_links: ^3.2.0
+  provider: ^6.0.3
+  solana: ^0.26.0
 
 dev_dependencies:
   flutter_test:
