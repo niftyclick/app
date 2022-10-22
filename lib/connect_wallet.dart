@@ -88,6 +88,15 @@ class _ConnectWalletState extends State<ConnectWallet> {
         ),
       ),
     );
+
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => SelectImage(
+          camera: widget.camera,
+          publicKey: walletAddr,
+        ),
+      ),
+    );
   }
 
   void _disconnect() async {
@@ -178,21 +187,7 @@ class _ConnectWalletState extends State<ConnectWallet> {
                           ),
                         ),
                         ElevatedButton(
-                          onPressed: () async {
-                            _connect();
-                              if (walletAddr == "") return;
-                              print(walletAddr.length);
-
-                              // If the picture was taken, display it on a new screen.
-                              await Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) => SelectImage(
-                                    camera: widget.camera,
-                                    publicKey: walletAddr,
-                                  ),
-                                ),
-                              );
-                          },
+                          onPressed: _connect,
                           child: const Text("Connect Phantom"),
                         ),
                         ElevatedButton(
