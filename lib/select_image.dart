@@ -45,6 +45,8 @@ class _SelectImageState extends State<SelectImage> {
       widget.camera,
       // Define the resolution to use.
       ResolutionPreset.medium,
+
+      imageFormatGroup: ImageFormatGroup.yuv420,
     );
 
     // Next, initialize the controller. This returns a Future.
@@ -56,54 +58,56 @@ class _SelectImageState extends State<SelectImage> {
     DeepLinkProvider provider = DeepLinkProvider();
     return MaterialApp(
         home: Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: const Text("Flutter Phantom Deeplinking"),
       ),
       body: Provider<DeepLinkProvider>(
-          create: (context) => provider,
-          dispose: (context, provider) => provider.dispose(),
-          child: Center(
-            child: Column(
-              children: [
-                FutureBuilder(
-                  future: _initializeControllerFuture,
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.done) {
-                      // If the Future is complete, display the preview.
-                      return CameraPreview(_controller);
-                    } else {
-                      // Otherwise, display a loading indicator.
-                      return const Center(child: CircularProgressIndicator());
+        create: (context) => provider,
+        dispose: (context, provider) => provider.dispose(),
+        child: Center(
+          child: Column(
+            children: [
+              FutureBuilder(
+                future: _initializeControllerFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    // If the Future is complete, display the preview.
+                    return CameraPreview(_controller);
+                  } else {
+                    // Otherwise, display a loading indicator.
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                },
+              ),
+              ElevatedButton(
+                  onPressed: () async {
+                    try {
+                      final image =
+                          await _picker.pickImage(source: ImageSource.gallery);
+
+                      if (!mounted) return;
+
+                      // If the picture was taken, display it on a new screen.
+                      await Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => DisplayAndMint(
+                            imagePath: image!.path,
+                            publicKey: widget.publicKey,
+                          ),
+                        ),
+                      );
+                    } catch (e) {
+                      if (kDebugMode) {
+                        print(e);
+                      }
                     }
                   },
-                ),
-                ElevatedButton(
-                    onPressed: () async {
-                      try {
-                        final image = await _picker.pickImage(
-                            source: ImageSource.gallery);
-
-                        if (!mounted) return;
-
-                        // If the picture was taken, display it on a new screen.
-                        await Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => DisplayAndMint(
-                              imagePath: image!.path,
-                              publicKey: widget.publicKey,
-                            ),
-                          ),
-                        );
-                      } catch (e) {
-                        if (kDebugMode) {
-                          print(e);
-                        }
-                      }
-                    },
-                    child: const Text("Open Gallery")),
-              ],
-            ),
-          )),
+                  child: const Text("Open Gallery")),
+            ],
+          ),
+        ),
+      ),
       floatingActionButton: Stack(
         children: <Widget>[
           Padding(

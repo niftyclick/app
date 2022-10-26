@@ -89,14 +89,17 @@ class _ConnectWalletState extends State<ConnectWallet> {
       ),
     );
 
-    await Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => SelectImage(
-          camera: widget.camera,
-          publicKey: walletAddr,
+    Future.delayed(const Duration(seconds: 2), () {
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(
+          builder: (context) => SelectImage(
+            camera: widget.camera,
+            publicKey: walletAddr,
+          ),
         ),
-      ),
-    );
+        (route) => false,
+      );
+    });
   }
 
   void _disconnect() async {
