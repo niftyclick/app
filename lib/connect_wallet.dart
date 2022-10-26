@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:bs58/bs58.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:nifty_click_app/select_image.dart';
 import 'package:pinenacl/x25519.dart';
 import 'package:provider/provider.dart';
@@ -140,7 +141,14 @@ class _ConnectWalletState extends State<ConnectWallet> {
     return MaterialApp(
         home: Scaffold(
             appBar: AppBar(
-              title: const Text("Flutter Phantom Deeplinking"),
+              backgroundColor: Colors.black,
+              titleTextStyle: GoogleFonts.montserrat(
+                textStyle: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                ),
+              ),
+              title: const Text("Home"),
             ),
             body: Provider<DeepLinkProvider>(
               create: (context) => provider,
@@ -168,32 +176,60 @@ class _ConnectWalletState extends State<ConnectWallet> {
                   return Center(
                     child: Column(
                       children: [
-                        Container(
-                          width: MediaQuery.of(context).size.width,
-                          height: 400,
-                          decoration: const BoxDecoration(
-                            color: Colors.black,
-                          ),
-                          child: SingleChildScrollView(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text(
-                                  "LOGS:",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                ...logs,
-                              ],
+                        // Container(
+                        //   width: MediaQuery.of(context).size.width,
+                        //   height: 400,
+                        //   decoration: const BoxDecoration(
+                        //     color: Colors.black,
+                        //   ),
+                        //   child: SingleChildScrollView(
+                        //     child: Column(
+                        //       crossAxisAlignment: CrossAxisAlignment.start,
+                        //       children: [
+                        //         const Text(
+                        //           "LOGS:",
+                        //           style: TextStyle(
+                        //             color: Colors.white,
+                        //           ),
+                        //         ),
+                        //         ...logs,
+                        //       ],
+                        //     ),
+                        //   ),
+                        // ),
+                        const SizedBox(height: 100),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.black,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 20,
+                              vertical: 10,
+                            ),
+                            shadowColor: Colors.black,
+                            textStyle: TextStyle(
+                              color: Colors.white,
+                              fontFamily: GoogleFonts.poppins().fontFamily,
+                              fontSize: 17,
                             ),
                           ),
-                        ),
-                        ElevatedButton(
                           onPressed: _connect,
                           child: const Text("Connect Phantom"),
                         ),
+                        const SizedBox(height: 40),
                         ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.black,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 20,
+                              vertical: 10,
+                            ),
+                            shadowColor: Colors.black,
+                            textStyle: TextStyle(
+                              color: Colors.white,
+                              fontFamily: GoogleFonts.poppins().fontFamily,
+                              fontSize: 17,
+                            ),
+                          ),
                           onPressed: () => walletAddr == ""
                               ? ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
@@ -205,6 +241,15 @@ class _ConnectWalletState extends State<ConnectWallet> {
                                 )
                               : _disconnect(),
                           child: const Text("Disconnect"),
+                        ),
+                        const SizedBox(height: 450),
+                        Text(
+                          "© NiftyClick 2022.\nAll rights reserved.",
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontFamily: GoogleFonts.nunito().fontFamily,
+                            fontSize: 18,
+                          ),
                         ),
                       ],
                     ),

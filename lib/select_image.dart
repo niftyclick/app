@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_print
 
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:pinenacl/x25519.dart';
 import 'package:provider/provider.dart';
 
@@ -60,7 +61,14 @@ class _SelectImageState extends State<SelectImage> {
         home: Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        title: const Text("Flutter Phantom Deeplinking"),
+        backgroundColor: Colors.black,
+        titleTextStyle: GoogleFonts.montserrat(
+          textStyle: const TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+          ),
+        ),
+        title: const Text("Select Image"),
       ),
       body: Provider<DeepLinkProvider>(
         create: (context) => provider,
@@ -80,7 +88,19 @@ class _SelectImageState extends State<SelectImage> {
                   }
                 },
               ),
+              const SizedBox(height: 30),
               ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.black,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 10,
+                    ),
+                    textStyle: TextStyle(
+                        color: Colors.white,
+                        fontFamily: GoogleFonts.poppins().fontFamily,
+                        fontSize: 17),
+                  ),
                   onPressed: () async {
                     try {
                       final image =
@@ -115,6 +135,7 @@ class _SelectImageState extends State<SelectImage> {
             child: Align(
               alignment: Alignment.bottomRight,
               child: FloatingActionButton(
+                backgroundColor: Colors.black,
                 onPressed: () async {
                   try {
                     await _initializeControllerFuture;

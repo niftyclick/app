@@ -17,7 +17,7 @@ Future<void> main() async {
     MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primaryColor: Colors.purple,
+        primaryColor: Colors.black,
       ),
       home: ConnectWallet(
         // Pass the appropriate camera to the TakePictureScreen widget.

@@ -2,6 +2,7 @@
 
 import 'dart:convert';
 import 'dart:io';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:path_provider/path_provider.dart' as path;
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -104,40 +105,79 @@ class _DisplayAndMintState extends State<DisplayAndMint> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Display the Picture')),
-      body: SingleChildScrollView(
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        titleTextStyle: GoogleFonts.montserrat(
+          textStyle: const TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+          ),
+        ),
+        title: const Text("Preview and Mint"),
+      ),
+      body: Container(
+        margin: const EdgeInsets.fromLTRB(19.0, 0.0, 15.0, 0.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            const SizedBox(height: 10),
             Image.file(
               File(widget.imagePath),
-              height: 400,
-              width: 350,
+              height: 200,
             ),
-            const SizedBox(height: 40),
+            const SizedBox(height: 10),
             TextField(
+              style: GoogleFonts.montserrat(
+                textStyle: const TextStyle(
+                  color: Colors.black,
+                  fontSize: 15,
+                ),
+              ),
               controller: _name,
               obscureText: false,
               textAlign: TextAlign.left,
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.black, width: 1.0),
+                ),
                 hintText: 'NFT Title',
                 hintStyle: TextStyle(color: Colors.grey),
               ),
             ),
             const SizedBox(height: 10),
             TextField(
+              style: GoogleFonts.montserrat(
+                textStyle: const TextStyle(
+                  color: Colors.black,
+                  fontSize: 15,
+                ),
+              ),
               controller: _description,
               obscureText: false,
               textAlign: TextAlign.left,
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.black, width: 1.0),
+                ),
                 hintText: 'Description',
                 hintStyle: TextStyle(color: Colors.grey),
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 10),
             ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.black,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 10,
+                ),
+                textStyle: TextStyle(
+                    color: Colors.white,
+                    fontFamily: GoogleFonts.poppins().fontFamily,
+                    fontSize: 17),
+              ),
               onPressed: () async {
                 print("Uploading Image.");
                 final bytes = File(widget.imagePath).readAsBytesSync();
@@ -228,7 +268,7 @@ class _DisplayAndMintState extends State<DisplayAndMint> {
                 }
               },
               child: const Text('Mint as NFT'),
-            ),
+            )
           ],
         ),
       ),
