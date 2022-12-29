@@ -49,6 +49,7 @@ dependencies:
   solana: ^0.26.0
   google_fonts: ^3.0.1
   google_nav_bar: ^5.0.6
+  photo_manager: ^2.5.2
 
 dev_dependencies:
   flutter_test:
