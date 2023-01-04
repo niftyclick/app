@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:nifty_click_app/constants.dart';
+import 'package:nifty_click_app/screens/camera_screen.dart';
 import 'package:nifty_click_app/screens/gallery.dart';
 import 'package:nifty_click_app/screens/nft_gallery.dart';
 import 'package:photo_manager/photo_manager.dart';
+import 'package:camera/camera.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+    final CameraDescription camera;
+  const HomeScreen({Key? key, required this.camera}) : super(key: key);
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -31,7 +34,14 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       body: _screens[_selectedIndex],
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => CameraScreen(
+                camera: widget.camera
+              )
+            )
+          );
+        },
         backgroundColor: orange,
         splashColor: orange,
         child: const Icon(

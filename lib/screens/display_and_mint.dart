@@ -8,14 +8,16 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
 
+import 'package:nifty_click_app/constants.dart';
+
 class DisplayAndMint extends StatefulWidget {
   final String imagePath;
-  final String publicKey;
+  // final String publicKey;
 
   const DisplayAndMint({
     Key? key,
     required this.imagePath,
-    required this.publicKey,
+    // required this.publicKey,
   }) : super(key: key);
 
   @override
@@ -106,28 +108,33 @@ class _DisplayAndMintState extends State<DisplayAndMint> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.black,
-        titleTextStyle: GoogleFonts.montserrat(
-          textStyle: const TextStyle(
-            color: Colors.white,
-            fontSize: 20,
+         automaticallyImplyLeading: false,
+        centerTitle: false,
+        elevation: 0,
+        backgroundColor: lightSilver,
+        title: Text(
+          "Mint",
+          style: TextStyle(
+            fontSize: size,
+            color: darkGrey,
+            fontFamily: GoogleFonts.lato().fontFamily,
+            fontWeight: FontWeight.w600,
           ),
         ),
-        title: const Text("Preview and Mint"),
       ),
       body: Container(
         margin: const EdgeInsets.fromLTRB(19.0, 0.0, 15.0, 0.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const SizedBox(height: 10),
+            const SizedBox(height: 20),
             Image.file(
               File(widget.imagePath),
               height: 200,
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 20),
             TextField(
-              style: GoogleFonts.montserrat(
+              style: GoogleFonts.poppins(
                 textStyle: const TextStyle(
                   color: Colors.black,
                   fontSize: 15,
@@ -145,7 +152,7 @@ class _DisplayAndMintState extends State<DisplayAndMint> {
                 hintStyle: TextStyle(color: Colors.grey),
               ),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 15),
             TextField(
               style: GoogleFonts.montserrat(
                 textStyle: const TextStyle(
@@ -168,13 +175,13 @@ class _DisplayAndMintState extends State<DisplayAndMint> {
             const SizedBox(height: 10),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.black,
+                backgroundColor: orange,
                 padding: const EdgeInsets.symmetric(
                   horizontal: 20,
                   vertical: 10,
                 ),
                 textStyle: TextStyle(
-                    color: Colors.white,
+                    color: lightSilver,
                     fontFamily: GoogleFonts.poppins().fontFamily,
                     fontSize: 17),
               ),
@@ -200,11 +207,11 @@ class _DisplayAndMintState extends State<DisplayAndMint> {
                   print(res.statusCode);
                 }
                 print("Uploading JSON.");
-                print(widget.publicKey);
-                imageIpfs != "" && widget.publicKey != ""
-                    ? await writeCounter(await makeJsonString(_name.text,
-                        _description.text, widget.publicKey, imageIpfs))
-                    : print("No image");
+                // print(widget.publicKey);
+                // imageIpfs != "" && widget.publicKey != ""
+                    // ? await writeCounter(await makeJsonString(_name.text,
+                        // _description.text, widget.publicKey, imageIpfs))
+                    // : print("No image");
                 final jsonFile = await _localFile;
                 setState(() {});
                 final jsonBytes = jsonFile.readAsBytesSync();

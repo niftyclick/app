@@ -24,7 +24,7 @@ class _GalleryState extends State<Gallery> {
         title: const Text(
           "Gallery",
           style: TextStyle(
-            fontSize: 32,
+            fontSize: size,
             color: darkGrey,
             fontWeight: FontWeight.w600,
           ),
@@ -47,7 +47,9 @@ class _GalleryState extends State<Gallery> {
                 String mime = await photo.mimeTypeAsync ?? "";
                 print(mime);
                 File? file = await photo.loadFile();
-                if (file != null) galleryPhotos.add(file);
+                // if (file != null) {
+                  galleryPhotos.add(file!);
+                // }
               }
             }
           }

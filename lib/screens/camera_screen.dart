@@ -4,29 +4,29 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pinenacl/x25519.dart';
 import 'package:provider/provider.dart';
-
-import 'deep_link_provider.dart';
+import 'package:nifty_click_app/constants.dart';
+import '../deep_link_provider.dart';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:nifty_click_app/display_and_mint.dart';
+import 'package:nifty_click_app/screens/display_and_mint.dart';
 
-class SelectImage extends StatefulWidget {
+class CameraScreen extends StatefulWidget {
   final CameraDescription camera;
-  final String publicKey;
+  // final String publicKey;
 
-  const SelectImage({
+  const CameraScreen({
     Key? key,
     required this.camera,
-    required this.publicKey,
+    // required this.publicKey,
   }) : super(key: key);
 
   @override
-  State<SelectImage> createState() => _SelectImageState();
+  State<CameraScreen> createState() => _CameraScreenState();
 }
 
-class _SelectImageState extends State<SelectImage> {
+class _CameraScreenState extends State<CameraScreen> {
   late CameraController _controller;
   late Future<void> _initializeControllerFuture;
   final ImagePicker _picker = ImagePicker();
@@ -61,14 +61,19 @@ class _SelectImageState extends State<SelectImage> {
         home: Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        backgroundColor: Colors.black,
-        titleTextStyle: GoogleFonts.montserrat(
-          textStyle: const TextStyle(
-            color: Colors.white,
-            fontSize: 20,
+        automaticallyImplyLeading: false,
+        centerTitle: false,
+        elevation: 0,
+        backgroundColor: lightSilver,
+        title: Text(
+          "Camera",
+          style: TextStyle(
+            fontSize: size,
+            color: darkGrey,
+            fontFamily: GoogleFonts.lato().fontFamily,
+            fontWeight: FontWeight.w600,
           ),
         ),
-        title: const Text("Select Image"),
       ),
       body: Provider<DeepLinkProvider>(
         create: (context) => provider,
@@ -88,16 +93,16 @@ class _SelectImageState extends State<SelectImage> {
                   }
                 },
               ),
-              const SizedBox(height: 30),
-              ElevatedButton(
+              const SizedBox(height: 20),
+             ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.black,
+                    backgroundColor: orange,
                     padding: const EdgeInsets.symmetric(
                       horizontal: 20,
                       vertical: 10,
                     ),
                     textStyle: TextStyle(
-                        color: Colors.white,
+                        color: lightSilver,
                         fontFamily: GoogleFonts.poppins().fontFamily,
                         fontSize: 17),
                   ),
@@ -105,15 +110,16 @@ class _SelectImageState extends State<SelectImage> {
                     try {
                       final image =
                           await _picker.pickImage(source: ImageSource.gallery);
-
+                      
+                      if(image == null) return;
                       if (!mounted) return;
 
                       // If the picture was taken, display it on a new screen.
                       await Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (context) => DisplayAndMint(
-                            imagePath: image!.path,
-                            publicKey: widget.publicKey,
+                            imagePath: image.path,
+                            // publicKey: widget.publicKey,
                           ),
                         ),
                       );
@@ -131,11 +137,16 @@ class _SelectImageState extends State<SelectImage> {
       floatingActionButton: Stack(
         children: <Widget>[
           Padding(
-            padding: const EdgeInsets.only(left: 31),
+            padding: const EdgeInsets.only(left: 1),
             child: Align(
               alignment: Alignment.bottomRight,
               child: FloatingActionButton(
-                backgroundColor: Colors.black,
+                backgroundColor: orange,
+                splashColor: orange,
+                child: const Icon(
+                  Icons.add_a_photo_outlined,
+                  color: lightSilver,
+                ),
                 onPressed: () async {
                   try {
                     await _initializeControllerFuture;
@@ -149,7 +160,7 @@ class _SelectImageState extends State<SelectImage> {
                       MaterialPageRoute(
                         builder: (context) => DisplayAndMint(
                           imagePath: image.path,
-                          publicKey: widget.publicKey,
+                          // publicKey: widget.publicKey,
                         ),
                       ),
                     );
@@ -159,7 +170,6 @@ class _SelectImageState extends State<SelectImage> {
                     }
                   }
                 },
-                child: const Icon(Icons.camera_alt),
               ),
             ),
           ),

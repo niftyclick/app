@@ -21,7 +21,7 @@ class _NFTGalleryState extends State<NFTGallery> {
         title: const Text(
           "NFT Gallery",
           style: TextStyle(
-            fontSize: 32,
+            fontSize: size,
             color: darkGrey,
             fontWeight: FontWeight.w600,
           ),
