@@ -4,6 +4,10 @@
 
 list(APPEND FLUTTER_PLUGIN_LIST
   app_links_windows
+  connectivity_plus
+  image_compression_flutter
+  nb_utils
+  permission_handler_windows
   url_launcher_windows
 )
 

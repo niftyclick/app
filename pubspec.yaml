@@ -40,7 +40,6 @@ dependencies:
   path_provider: ^2.0.11
   http: ^0.13.5
   url_launcher: ^6.1.5
-  image_picker: ^0.8.6
   bs58: ^1.0.2
   pinenacl: ^0.5.1
   uni_links: ^0.5.1
@@ -50,6 +49,7 @@ dependencies:
   google_fonts: ^3.0.1
   google_nav_bar: ^5.0.6
   photo_manager: ^2.5.2
+  image_editor_plus: ^0.1.8
 
 dev_dependencies:
   flutter_test:
