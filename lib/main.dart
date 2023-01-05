@@ -11,6 +11,8 @@ Future<void> main() async {
   // Obtain a list of the available cameras on the device.
   final cameras = await availableCameras();
 
+  print(cameras);
+
   runApp(
     MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -18,9 +20,9 @@ Future<void> main() async {
         textTheme: GoogleFonts.latoTextTheme(),
         fontFamily: GoogleFonts.lato().fontFamily,
       ),
-      home:  HomeScreen(
-        camera: cameras
-      )
+      home: HomeScreen(
+        camera: cameras,
+      ),
     ),
   );
 }

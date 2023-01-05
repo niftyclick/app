@@ -27,6 +27,9 @@ class _NFTGalleryState extends State<NFTGallery> {
           ),
         ),
       ),
+      body: const Center(
+        child: Text("No NFTs minted yet."),
+      ),
     );
   }
 }

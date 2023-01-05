@@ -47,7 +47,7 @@ class _CameraScreenState extends State<CameraScreen> {
   void initState() {
     super.initState();
     _controller = CameraController(
-      widget.camera.first,
+      widget.camera[0],
       ResolutionPreset.ultraHigh,
       imageFormatGroup: ImageFormatGroup.yuv420,
     );
@@ -94,7 +94,7 @@ class _CameraScreenState extends State<CameraScreen> {
                   if (snapshot.connectionState == ConnectionState.done) {
                     // If the Future is complete, display the preview.
                     return SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.8,
+                      height: MediaQuery.of(context).size.height * 0.75,
                       width: MediaQuery.of(context).size.width,
                       child: CameraPreview(_controller),
                     );
@@ -145,14 +145,20 @@ class _CameraScreenState extends State<CameraScreen> {
                       CameraLensDirection.back) {
                     setState(() {
                       _controller = CameraController(
-                          widget.camera.last, ResolutionPreset.ultraHigh,
-                          imageFormatGroup: ImageFormatGroup.yuv420);
+                        widget.camera.firstWhere((camera) =>
+                            camera.lensDirection == CameraLensDirection.front),
+                        ResolutionPreset.ultraHigh,
+                        imageFormatGroup: ImageFormatGroup.yuv420,
+                      );
                     });
                   } else {
                     setState(() {
                       _controller = CameraController(
-                          widget.camera.first, ResolutionPreset.ultraHigh,
-                          imageFormatGroup: ImageFormatGroup.yuv420);
+                        widget.camera.firstWhere((camera) =>
+                            camera.lensDirection == CameraLensDirection.back),
+                        ResolutionPreset.ultraHigh,
+                        imageFormatGroup: ImageFormatGroup.yuv420,
+                      );
                     });
                   }
                   // Next, initialize the controller. This returns a Future.
