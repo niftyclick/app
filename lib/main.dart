@@ -11,19 +11,15 @@ Future<void> main() async {
   // Obtain a list of the available cameras on the device.
   final cameras = await availableCameras();
 
-  // Get a specific camera from the list of available cameras.
-  final firstCamera = cameras.first;
-
   runApp(
     MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primaryColor: Colors.purple,
         textTheme: GoogleFonts.latoTextTheme(),
         fontFamily: GoogleFonts.lato().fontFamily,
       ),
       home:  HomeScreen(
-        camera: firstCamera
+        camera: cameras
       )
     ),
   );

@@ -1,7 +1,10 @@
 // ignore_for_file: avoid_print
-
+import 'package:path_provider/path_provider.dart' as path;
 import 'package:flutter/material.dart';
+import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:image_editor_plus/image_editor_plus.dart';
+
 import 'package:pinenacl/x25519.dart';
 import 'package:provider/provider.dart';
 import 'package:nifty_click_app/constants.dart';
@@ -9,11 +12,11 @@ import '../deep_link_provider.dart';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
-import 'package:image_picker/image_picker.dart';
+// import 'package:image_picker/image_picker.dart';
 import 'package:nifty_click_app/screens/display_and_mint.dart';
 
 class CameraScreen extends StatefulWidget {
-  final CameraDescription camera;
+  final List<CameraDescription> camera;
   // final String publicKey;
 
   const CameraScreen({
@@ -29,7 +32,9 @@ class CameraScreen extends StatefulWidget {
 class _CameraScreenState extends State<CameraScreen> {
   late CameraController _controller;
   late Future<void> _initializeControllerFuture;
-  final ImagePicker _picker = ImagePicker();
+  XFile? image;
+  Uint8List? imageData;
+  final int _selectedIndex = 0;
 
   final List<Widget> logs = [];
   late PrivateKey sk;
@@ -42,16 +47,18 @@ class _CameraScreenState extends State<CameraScreen> {
   void initState() {
     super.initState();
     _controller = CameraController(
-      // Get a specific camera from the list of available cameras.
-      widget.camera,
-      // Define the resolution to use.
-      ResolutionPreset.medium,
-
+      widget.camera.first,
+      ResolutionPreset.ultraHigh,
       imageFormatGroup: ImageFormatGroup.yuv420,
     );
 
     // Next, initialize the controller. This returns a Future.
     _initializeControllerFuture = _controller.initialize();
+  }
+
+  Future<String> get _localPath async {
+    final directory = await path.getTemporaryDirectory();
+    return directory.path;
   }
 
   @override
@@ -86,82 +93,117 @@ class _CameraScreenState extends State<CameraScreen> {
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.done) {
                     // If the Future is complete, display the preview.
-                    return CameraPreview(_controller);
+                    return SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.8,
+                      width: MediaQuery.of(context).size.width,
+                      child: CameraPreview(_controller),
+                    );
                   } else {
                     // Otherwise, display a loading indicator.
-                    return const Center(child: CircularProgressIndicator());
+                    return const Center(
+                        child: CircularProgressIndicator(
+                      color: orange,
+                    ));
                   }
                 },
               ),
-              const SizedBox(height: 20),
-             ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: orange,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 10,
-                    ),
-                    textStyle: TextStyle(
-                        color: lightSilver,
-                        fontFamily: GoogleFonts.poppins().fontFamily,
-                        fontSize: 17),
-                  ),
-                  onPressed: () async {
-                    try {
-                      final image =
-                          await _picker.pickImage(source: ImageSource.gallery);
-                      
-                      if(image == null) return;
-                      if (!mounted) return;
-
-                      // If the picture was taken, display it on a new screen.
-                      await Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => DisplayAndMint(
-                            imagePath: image.path,
-                            // publicKey: widget.publicKey,
-                          ),
-                        ),
-                      );
-                    } catch (e) {
-                      if (kDebugMode) {
-                        print(e);
-                      }
-                    }
-                  },
-                  child: const Text("Open Gallery")),
             ],
           ),
         ),
       ),
-      floatingActionButton: Stack(
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.only(left: 1),
-            child: Align(
-              alignment: Alignment.bottomRight,
-              child: FloatingActionButton(
+      bottomNavigationBar: Container(
+        decoration: const BoxDecoration(
+          color: darkGrey,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(32),
+            topRight: Radius.circular(32),
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(18, 17, 18, 17),
+          child: GNav(
+            tabBorderRadius: 16,
+            rippleColor: orange,
+            gap: 0,
+            activeColor: Colors.black,
+            iconSize: size,
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+            duration: const Duration(milliseconds: 400),
+            tabBackgroundColor: Colors.grey[100]!,
+            color: Colors.black,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            tabs: [
+              GButton(
+                icon: Icons.flip_camera_android_outlined,
+                iconColor: lightSilver,
+                iconActiveColor: lightSilver,
                 backgroundColor: orange,
-                splashColor: orange,
-                child: const Icon(
-                  Icons.add_a_photo_outlined,
-                  color: lightSilver,
-                ),
+                textColor: lightSilver,
+                onPressed: () async {
+                  // if camera is front facing, switch to back facing and vice versa
+                  if (_controller.description.lensDirection ==
+                      CameraLensDirection.back) {
+                    setState(() {
+                      _controller = CameraController(
+                          widget.camera.last, ResolutionPreset.ultraHigh,
+                          imageFormatGroup: ImageFormatGroup.yuv420);
+                    });
+                  } else {
+                    setState(() {
+                      _controller = CameraController(
+                          widget.camera.first, ResolutionPreset.ultraHigh,
+                          imageFormatGroup: ImageFormatGroup.yuv420);
+                    });
+                  }
+                  // Next, initialize the controller. This returns a Future.
+                  _initializeControllerFuture = _controller.initialize();
+                },
+              ),
+              GButton(
+                icon: Icons.camera_alt,
+                iconColor: lightSilver,
+                iconActiveColor: lightSilver,
+                backgroundColor: orange,
+                textColor: lightSilver,
                 onPressed: () async {
                   try {
                     await _initializeControllerFuture;
 
-                    final image = await _controller.takePicture();
+                    image = await _controller.takePicture();
+                    imageData = await image!.readAsBytes();
+                    setState(() {});
 
                     if (!mounted) return;
 
-                    // If the picture was taken, display it on a new screen.
-                    await Navigator.of(context).push(
+                    final editedImage = await Navigator.push(
+                      context,
                       MaterialPageRoute(
-                        builder: (context) => DisplayAndMint(
-                          imagePath: image.path,
-                          // publicKey: widget.publicKey,
+                        builder: (context) => ImageEditor(
+                          image: imageData,
                         ),
+                      ),
+                    );
+
+                    final pathImage =
+                        "${await _localPath}/editedImage ${DateTime.now()}.png";
+                    XFile.fromData(editedImage).saveTo(pathImage);
+
+                    // replace with edited image
+                    if (editedImage != null) {
+                      setState(() {
+                        imageData = editedImage;
+                        image = XFile.fromData(editedImage);
+                      });
+                    }
+
+                    //display and mint
+                    await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            DisplayAndMint(imagePath: pathImage
+                                // publicKey: widget.publicKey,
+                                ),
                       ),
                     );
                   } catch (e) {
@@ -171,9 +213,9 @@ class _CameraScreenState extends State<CameraScreen> {
                   }
                 },
               ),
-            ),
+            ],
           ),
-        ],
+        ),
       ),
     ));
   }

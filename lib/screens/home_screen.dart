@@ -8,7 +8,7 @@ import 'package:photo_manager/photo_manager.dart';
 import 'package:camera/camera.dart';
 
 class HomeScreen extends StatefulWidget {
-    final CameraDescription camera;
+  final List<CameraDescription> camera;
   const HomeScreen({Key? key, required this.camera}) : super(key: key);
 
   @override
@@ -58,13 +58,13 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 36),
+       padding: const EdgeInsets.fromLTRB(18, 17, 18, 17),
           child: GNav(
             tabBorderRadius: 16,
             rippleColor: orange,
             gap: 0,
             activeColor: Colors.black,
-            iconSize: 24,
+            iconSize: size,
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
             duration: const Duration(milliseconds: 400),
             tabBackgroundColor: Colors.grey[100]!,

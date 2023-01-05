@@ -130,7 +130,7 @@ class _DisplayAndMintState extends State<DisplayAndMint> {
             const SizedBox(height: 20),
             Image.file(
               File(widget.imagePath),
-              height: 200,
+              height: 300,
             ),
             const SizedBox(height: 20),
             TextField(
