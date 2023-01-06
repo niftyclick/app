@@ -34,7 +34,6 @@ class _CameraScreenState extends State<CameraScreen> {
   late Future<void> _initializeControllerFuture;
   XFile? image;
   Uint8List? imageData;
-  final int _selectedIndex = 0;
 
   final List<Widget> logs = [];
   late PrivateKey sk;
@@ -94,7 +93,7 @@ class _CameraScreenState extends State<CameraScreen> {
                   if (snapshot.connectionState == ConnectionState.done) {
                     // If the Future is complete, display the preview.
                     return SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.75,
+                      height: MediaQuery.of(context).size.height * 0.8,
                       width: MediaQuery.of(context).size.width,
                       child: CameraPreview(_controller),
                     );
@@ -113,21 +112,20 @@ class _CameraScreenState extends State<CameraScreen> {
       ),
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(
-          color: darkGrey,
+          color: Colors.white,
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(32),
             topRight: Radius.circular(32),
           ),
         ),
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(18, 17, 18, 17),
+          padding: const EdgeInsets.fromLTRB(18, 16, 18, 18),
           child: GNav(
-            tabBorderRadius: 16,
             rippleColor: orange,
             gap: 0,
             activeColor: Colors.black,
             iconSize: size,
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
             duration: const Duration(milliseconds: 400),
             tabBackgroundColor: Colors.grey[100]!,
             color: Colors.black,
@@ -135,7 +133,7 @@ class _CameraScreenState extends State<CameraScreen> {
             tabs: [
               GButton(
                 icon: Icons.flip_camera_android_outlined,
-                iconColor: lightSilver,
+                iconColor: black,
                 iconActiveColor: lightSilver,
                 backgroundColor: orange,
                 textColor: lightSilver,
@@ -167,7 +165,7 @@ class _CameraScreenState extends State<CameraScreen> {
               ),
               GButton(
                 icon: Icons.camera_alt,
-                iconColor: lightSilver,
+                iconColor: black,
                 iconActiveColor: lightSilver,
                 backgroundColor: orange,
                 textColor: lightSilver,
@@ -202,6 +200,7 @@ class _CameraScreenState extends State<CameraScreen> {
                       });
                     }
 
+                    if (!mounted) return;
                     //display and mint
                     await Navigator.push(
                       context,

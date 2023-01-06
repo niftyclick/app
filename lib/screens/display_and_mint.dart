@@ -130,13 +130,13 @@ class _DisplayAndMintState extends State<DisplayAndMint> {
             const SizedBox(height: 20),
             Image.file(
               File(widget.imagePath),
-              height: 300,
+              height: 200,
             ),
             const SizedBox(height: 20),
             TextField(
               style: GoogleFonts.poppins(
                 textStyle: const TextStyle(
-                  color: Colors.black,
+                  color: black,
                   fontSize: 15,
                 ),
               ),
@@ -146,7 +146,7 @@ class _DisplayAndMintState extends State<DisplayAndMint> {
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black, width: 1.0),
+                  borderSide: BorderSide(color: black, width: 1.0),
                 ),
                 hintText: 'NFT Title',
                 hintStyle: TextStyle(color: Colors.grey),
@@ -156,7 +156,7 @@ class _DisplayAndMintState extends State<DisplayAndMint> {
             TextField(
               style: GoogleFonts.montserrat(
                 textStyle: const TextStyle(
-                  color: Colors.black,
+                  color: black,
                   fontSize: 15,
                 ),
               ),
@@ -166,7 +166,7 @@ class _DisplayAndMintState extends State<DisplayAndMint> {
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black, width: 1.0),
+                  borderSide: BorderSide(color: black, width: 1.0),
                 ),
                 hintText: 'Description',
                 hintStyle: TextStyle(color: Colors.grey),
