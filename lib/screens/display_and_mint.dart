@@ -12,12 +12,12 @@ import 'package:nifty_click_app/constants.dart';
 
 class DisplayAndMint extends StatefulWidget {
   final String imagePath;
-  // final String publicKey;
+  final String publicKey;
 
   const DisplayAndMint({
     Key? key,
     required this.imagePath,
-    // required this.publicKey,
+    required this.publicKey,
   }) : super(key: key);
 
   @override
@@ -207,11 +207,10 @@ class _DisplayAndMintState extends State<DisplayAndMint> {
                   print(res.statusCode);
                 }
                 print("Uploading JSON.");
-                // print(widget.publicKey);
-                // imageIpfs != "" && widget.publicKey != ""
-                    // ? await writeCounter(await makeJsonString(_name.text,
-                        // _description.text, widget.publicKey, imageIpfs))
-                    // : print("No image");
+                imageIpfs != "" && widget.publicKey != ""
+                    ? await writeCounter(await makeJsonString(_name.text,
+                        _description.text, widget.publicKey, imageIpfs))
+                    : print("No image");
                 final jsonFile = await _localFile;
                 setState(() {});
                 final jsonBytes = jsonFile.readAsBytesSync();

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:nifty_click_app/constants.dart';
 
 class NFTGallery extends StatefulWidget {
@@ -18,10 +19,12 @@ class _NFTGalleryState extends State<NFTGallery> {
         centerTitle: false,
         elevation: 0,
         backgroundColor: lightSilver,
-        title: const Text(
+        title: Text(
           "NFT Gallery",
           style: TextStyle(
             fontSize: size,
+                        fontFamily: GoogleFonts.lato().fontFamily,
+
             color: darkGrey,
             fontWeight: FontWeight.w600,
           ),

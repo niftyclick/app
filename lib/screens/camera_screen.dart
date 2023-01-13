@@ -17,12 +17,12 @@ import 'package:nifty_click_app/screens/display_and_mint.dart';
 
 class CameraScreen extends StatefulWidget {
   final List<CameraDescription> camera;
-  // final String publicKey;
+  final String publicKey;
 
   const CameraScreen({
     Key? key,
     required this.camera,
-    // required this.publicKey,
+    required this.publicKey,
   }) : super(key: key);
 
   @override
@@ -201,13 +201,13 @@ class _CameraScreenState extends State<CameraScreen> {
                     }
 
                     if (!mounted) return;
-                    //display and mint
+
                     await Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) =>
-                            DisplayAndMint(imagePath: pathImage
-                                // publicKey: widget.publicKey,
+                            DisplayAndMint(imagePath: pathImage,
+                                publicKey: widget.publicKey,
                                 ),
                       ),
                     );
