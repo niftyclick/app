@@ -52,6 +52,7 @@ dependencies:
   image_editor_plus: ^0.1.8
   flutter_speed_dial: ^6.2.0
   image_picker: ^0.8.6
+  cached_network_image: ^3.2.3
 
 dev_dependencies:
   flutter_test:

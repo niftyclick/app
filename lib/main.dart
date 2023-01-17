@@ -2,7 +2,6 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:nifty_click_app/screens/connect_wallet.dart';
-import 'package:nifty_click_app/screens/home_screen.dart';
 
 Future<void> main() async {
   // Ensure that plugin services are initialized so that `availableCameras()`

@@ -24,7 +24,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-
   final ImagePicker _picker = ImagePicker();
   @override
   void initState() {
@@ -35,12 +34,11 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: const NFTGallery(),
+      body: NFTGallery(publicKey: widget.publicKey),
       floatingActionButton: SpeedDial(
         backgroundColor: orange,
         children: [
           //text widget which prints a public key
-          
 
           SpeedDialChild(
             onTap: () {
@@ -69,27 +67,27 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           SpeedDialChild(
-              onTap: () async {
-               try {
-                      final image =
-                          await _picker.pickImage(source: ImageSource.gallery);
+            onTap: () async {
+              try {
+                final image =
+                    await _picker.pickImage(source: ImageSource.gallery);
 
-                      if (!mounted) return;
+                if (!mounted) return;
 
-                      // If the picture was taken, display it on a new screen.
-                      await Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => DisplayAndMint(
-                            imagePath: image!.path,
-                            publicKey: widget.publicKey,
-                          ),
-                        ),
-                      );
-                    } catch (e) {
-                      if (kDebugMode) {
-                        print(e);
-                      }
-                    }
+                // If the picture was taken, display it on a new screen.
+                await Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => DisplayAndMint(
+                      imagePath: image!.path,
+                      publicKey: widget.publicKey,
+                    ),
+                  ),
+                );
+              } catch (e) {
+                if (kDebugMode) {
+                  print(e);
+                }
+              }
             },
             labelWidget: Container(
               margin: const EdgeInsets.only(right: 4),
@@ -98,7 +96,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 color: orange,
                 borderRadius: BorderRadius.circular(100),
               ),
-              
               child: const Icon(
                 Icons.add_photo_alternate_outlined,
                 color: Colors.white,
