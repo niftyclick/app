@@ -205,10 +205,10 @@ class _CameraScreenState extends State<CameraScreen> {
                     await Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) =>
-                            DisplayAndMint(imagePath: pathImage,
-                                publicKey: widget.publicKey,
-                                ),
+                        builder: (context) => DisplayAndMint(
+                          imagePath: pathImage,
+                          publicKey: widget.publicKey,
+                        ),
                       ),
                     );
                   } catch (e) {

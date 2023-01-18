@@ -5,14 +5,14 @@
 import FlutterMacOS
 import Foundation
 
-import app_links_macos
+import app_links
 import connectivity_plus
 import image_compression_flutter
 import image_editor_common
 import nb_utils
 import path_provider_macos
 import photo_manager
-import shared_preferences_macos
+import shared_preferences_foundation
 import sqflite
 import url_launcher_macos
 

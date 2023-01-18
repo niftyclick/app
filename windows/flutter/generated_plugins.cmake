@@ -3,7 +3,7 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
-  app_links_windows
+  app_links
   connectivity_plus
   image_compression_flutter
   nb_utils

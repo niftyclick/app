@@ -40,8 +40,8 @@ class _DisplayAndMintState extends State<DisplayAndMint> {
   };
 
   var ipfsEndpoint = Uri.https("api.web3.storage", "/upload");
-  var candyPayEndpoint = Uri.https(
-      "public-api.candypay.fun", "/api/v1/integrations/niftyclick/generate");
+  var candyPayEndpoint =
+      Uri.https("api.candypay.fun", "/api/v1/integrations/niftyclick/generate");
 
   Future<String> get _localPath async {
     final directory = await path.getTemporaryDirectory();
@@ -108,7 +108,7 @@ class _DisplayAndMintState extends State<DisplayAndMint> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-         automaticallyImplyLeading: false,
+        automaticallyImplyLeading: false,
         centerTitle: false,
         elevation: 0,
         backgroundColor: lightSilver,

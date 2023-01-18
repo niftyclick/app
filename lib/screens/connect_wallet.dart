@@ -17,7 +17,6 @@ import 'package:camera/camera.dart';
 class ConnectWallet extends StatefulWidget {
   final List<CameraDescription> camera;
 
-
   const ConnectWallet({
     Key? key,
     required this.camera,
@@ -92,7 +91,7 @@ class _ConnectWalletState extends State<ConnectWallet> {
       ),
     );
 
-     Future.delayed(const Duration(seconds: 2), () {
+    Future.delayed(const Duration(seconds: 2), () {
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(
           builder: (context) => HomeScreen(
@@ -103,8 +102,6 @@ class _ConnectWalletState extends State<ConnectWallet> {
         (route) => false,
       );
     });
-
-
   }
 
   void _disconnect() async {
@@ -145,20 +142,20 @@ class _ConnectWalletState extends State<ConnectWallet> {
     return MaterialApp(
         home: Scaffold(
             appBar: AppBar(
-         automaticallyImplyLeading: false,
-        centerTitle: false,
-        elevation: 0,
-        backgroundColor: lightSilver,
-        title: Text(
-          "NiftyClick",
-          style: TextStyle(
-            fontSize: size,
-            color: darkGrey,
-            fontFamily: GoogleFonts.lato().fontFamily,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ),
+              automaticallyImplyLeading: false,
+              centerTitle: false,
+              elevation: 0,
+              backgroundColor: lightSilver,
+              title: Text(
+                "NiftyClick",
+                style: TextStyle(
+                  fontSize: size,
+                  color: darkGrey,
+                  fontFamily: GoogleFonts.lato().fontFamily,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
             body: Provider<DeepLinkProvider>(
               create: (context) => provider,
               dispose: (context, provider) => provider.dispose(),
