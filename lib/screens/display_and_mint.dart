@@ -124,177 +124,160 @@ class _DisplayAndMintState extends State<DisplayAndMint> {
       ),
       body: Container(
         margin: const EdgeInsets.fromLTRB(19.0, 0.0, 15.0, 0.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const SizedBox(height: 20),
-            Image.file(
-              File(widget.imagePath),
-              height: 200,
-            ),
-            const SizedBox(height: 20),
-            TextField(
-              style: GoogleFonts.poppins(
-                textStyle: const TextStyle(
-                  color: black,
-                  fontSize: 15,
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const SizedBox(height: 20),
+              Image.file(
+                File(widget.imagePath),
+                height: 200,
+              ),
+              const SizedBox(height: 20),
+              TextField(
+                style: GoogleFonts.poppins(
+                  textStyle: const TextStyle(
+                    color: black,
+                    fontSize: 15,
+                  ),
+                ),
+                controller: _name,
+                obscureText: false,
+                textAlign: TextAlign.left,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: black, width: 1.0),
+                  ),
+                  hintText: 'NFT Title',
+                  hintStyle: TextStyle(color: Colors.grey),
                 ),
               ),
-              controller: _name,
-              obscureText: false,
-              textAlign: TextAlign.left,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: black, width: 1.0),
+              const SizedBox(height: 15),
+              TextField(
+                style: GoogleFonts.montserrat(
+                  textStyle: const TextStyle(
+                    color: black,
+                    fontSize: 15,
+                  ),
                 ),
-                hintText: 'NFT Title',
-                hintStyle: TextStyle(color: Colors.grey),
-              ),
-            ),
-            const SizedBox(height: 15),
-            TextField(
-              style: GoogleFonts.montserrat(
-                textStyle: const TextStyle(
-                  color: black,
-                  fontSize: 15,
+                controller: _description,
+                obscureText: false,
+                textAlign: TextAlign.left,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: black, width: 1.0),
+                  ),
+                  hintText: 'Description',
+                  hintStyle: TextStyle(color: Colors.grey),
                 ),
               ),
-              controller: _description,
-              obscureText: false,
-              textAlign: TextAlign.left,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: black, width: 1.0),
+              const SizedBox(height: 10),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: orange,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 10,
+                  ),
+                  textStyle: TextStyle(
+                      color: lightSilver,
+                      fontFamily: GoogleFonts.poppins().fontFamily,
+                      fontSize: 17),
                 ),
-                hintText: 'Description',
-                hintStyle: TextStyle(color: Colors.grey),
-              ),
-            ),
-            const SizedBox(height: 10),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: orange,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 10,
-                ),
-                textStyle: TextStyle(
-                    color: lightSilver,
-                    fontFamily: GoogleFonts.poppins().fontFamily,
-                    fontSize: 17),
-              ),
-              onPressed: () async {
-                setState(() {
-                  buttonText  = "Uploading Image...";
-                });
-                final bytes = File(widget.imagePath).readAsBytesSync();
-                var ipfsRequest = http.MultipartRequest('POST', ipfsEndpoint);
-                ipfsRequest.headers.addAll(headers);
-                ipfsRequest.files.add(
-                  http.MultipartFile.fromBytes('file', bytes,
-                      filename: _name.text),
-                );
-                var res = await ipfsRequest.send();
-                if (res.statusCode == 200) {
-                  var response = await res.stream.bytesToString();
-                  setState(() {
-                    cid = jsonDecode(response)['cid'];
-                    imageIpfs = "https://$cid.ipfs.w3s.link";
-                  });
-
-                } else {
-                  print("Image upload failed.");
-                }
-                setState(() {
-                  buttonText  = "Uploading metadata...";
-                });
-                imageIpfs != "" && widget.publicKey != ""
-                    ? await writeCounter(await makeJsonString(_name.text,
-                        _description.text, widget.publicKey, imageIpfs))
-                    : null;
-                final jsonFile = await _localFile;
-                setState(() {});
-                final jsonBytes = jsonFile.readAsBytesSync();
-                var jsonRequest = http.MultipartRequest('POST', ipfsEndpoint);
-                jsonRequest.headers.addAll(headers);
-                jsonRequest.files.add(http.MultipartFile.fromBytes(
-                    'file', jsonBytes,
-                    filename: "metadata.json"));
-                var jsonRes = await jsonRequest.send();
-                if (jsonRes.statusCode == 200) {
-                  var response = await jsonRes.stream.bytesToString();
-                  setState(() {
-                    cid = jsonDecode(response)["cid"];
-                    jsonIpfs = "https://$cid.ipfs.w3s.link";
-                  });
-                } else {
-                  print(jsonRes.reasonPhrase);
-                }
-
-                setState(() {
-                  buttonText  = "Creating NFT...";
-                });
-
-                if (jsonIpfs != "") {
-                  var candyPayResponse = await http.post(
-                    candyPayEndpoint,
-                    headers: <String, String>{
-                      'Content-Type': 'application/json',
-                      'Authorization': 'Bearer xDBywyRp4y75oVxYQBby3',
-                    },
-                    body: jsonEncode(<String, dynamic>{
-                      "name": _name.text,
-                      "symbol": getSymbol(_name.text),
-                      "uri": jsonIpfs,
-                      "collection_size": 1,
-                      "seller_fee": 10,
-                      "network": "devnet",
-                      "label": "Niftyclick"
-                    }),
+                onPressed: () async {
+                  print("Uploading Image.");
+                  final bytes = File(widget.imagePath).readAsBytesSync();
+                  var ipfsRequest = http.MultipartRequest('POST', ipfsEndpoint);
+                  ipfsRequest.headers.addAll(headers);
+                  ipfsRequest.files.add(
+                    http.MultipartFile.fromBytes('file', bytes,
+                        filename: _name.text),
                   );
-
-
-                  if (candyPayResponse.statusCode == 200) {
-                    var body = candyPayResponse.body;
-
+                  var res = await ipfsRequest.send();
+                  if (res.statusCode == 200) {
+                    var response = await res.stream.bytesToString();
                     setState(() {
-                      txUrl = jsonDecode(body)["metadata"]["solana_url"];
-                      buttonText  = "Minting NFT...";
+                      cid = jsonDecode(response)['cid'];
+                      imageIpfs = "https://$cid.ipfs.w3s.link";
                     });
+                    print(imageIpfs);
+                    print("Image uploaded to IPFS.");
                   } else {
-
-                    setState(() {
-                      buttonText  = "Error";
-                    });
+                    print(res.statusCode);
                   }
-                  if (txUrl != "") {
-
+                  print("Uploading JSON.");
+                  imageIpfs != "" && widget.publicKey != ""
+                      ? await writeCounter(await makeJsonString(_name.text,
+                          _description.text, widget.publicKey, imageIpfs))
+                      : print("No image");
+                  final jsonFile = await _localFile;
+                  setState(() {});
+                  final jsonBytes = jsonFile.readAsBytesSync();
+                  var jsonRequest = http.MultipartRequest('POST', ipfsEndpoint);
+                  jsonRequest.headers.addAll(headers);
+                  jsonRequest.files.add(http.MultipartFile.fromBytes(
+                      'file', jsonBytes,
+                      filename: "metadata.json"));
+                  var jsonRes = await jsonRequest.send();
+                  if (jsonRes.statusCode == 200) {
+                    var response = await jsonRes.stream.bytesToString();
                     setState(() {
-                      buttonText  = "Opening Phantom...";
+                      cid = jsonDecode(response)["cid"];
+                      jsonIpfs = "https://$cid.ipfs.w3s.link";
                     });
-                    final str = txUrl.replaceAll("fun%2F%2F", "fun%2F");
-                    await launchUrl(Uri.parse(str));
+                    print(jsonIpfs);
+                  } else {
+                    print(jsonRes.reasonPhrase);
+                  }
 
-                    if (!mounted) return;
+                  print("Uploaded JSON to IPFS.");
 
-                    await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => NFTGallery(publicKey: widget.publicKey),
-                      ),
+                  print("Creating NFT using CandyPay API.");
+
+                  if (jsonIpfs != "") {
+                    var candyPayResponse = await http.post(
+                      candyPayEndpoint,
+                      headers: <String, String>{
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer xDBywyRp4y75oVxYQBby3',
+                      },
+                      body: jsonEncode(<String, dynamic>{
+                        "name": _name.text,
+                        "symbol": getSymbol(_name.text),
+                        "uri": jsonIpfs,
+                        "collection_size": 1,
+                        "seller_fee": 10,
+                        "network": "devnet",
+                        "label": "Niftyclick"
+                      }),
                     );
+
+                    if (candyPayResponse.statusCode == 200) {
+                      var body = candyPayResponse.body;
+                      print(body);
+                      setState(() {
+                        txUrl = jsonDecode(body)["metadata"]["solana_url"];
+                      });
+                    } else {
+                      print(candyPayResponse.statusCode);
+                    }
+
+                    if (txUrl != "") {
+                      print("Got Transaction. Opening Phantom...");
+                      print(txUrl);
+                      await launchUrl(Uri.parse(txUrl));
+                      print("Minting Done.");
+                    }
+                  } else {
+                    print("No JSON");
                   }
-                } else {
-                  setState(() {
-                    buttonText  = "Error";
-                  });
-                }
-              },
-              child: Text(buttonText),
-            )
-          ]
+                },
+                child: const Text('Mint as NFT'),
+              )
+            ],
+          ),
         ),
       ),
     );
