@@ -1,8 +1,7 @@
-// ignore_for_file: avoid_print
-
 import 'dart:convert';
 import 'dart:io';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:nifty_click_app/screens/nft_gallery.dart';
 import 'package:path_provider/path_provider.dart' as path;
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -187,7 +186,6 @@ class _DisplayAndMintState extends State<DisplayAndMint> {
                     fontSize: 17),
               ),
               onPressed: () async {
-                print("Uploading Image.");
                 setState(() {
                   buttonText  = "Uploading Image...";
                 });
@@ -205,19 +203,17 @@ class _DisplayAndMintState extends State<DisplayAndMint> {
                     cid = jsonDecode(response)['cid'];
                     imageIpfs = "https://$cid.ipfs.w3s.link";
                   });
-                  print(imageIpfs);
-                  print("Image uploaded to IPFS.");
+
                 } else {
-                  print(res.statusCode);
+                  print("Image upload failed.");
                 }
-                print("Uploading metadata.");
                 setState(() {
                   buttonText  = "Uploading metadata...";
                 });
                 imageIpfs != "" && widget.publicKey != ""
                     ? await writeCounter(await makeJsonString(_name.text,
                         _description.text, widget.publicKey, imageIpfs))
-                    : print("No image");
+                    : null;
                 final jsonFile = await _localFile;
                 setState(() {});
                 final jsonBytes = jsonFile.readAsBytesSync();
@@ -233,14 +229,10 @@ class _DisplayAndMintState extends State<DisplayAndMint> {
                     cid = jsonDecode(response)["cid"];
                     jsonIpfs = "https://$cid.ipfs.w3s.link";
                   });
-                  print(jsonIpfs);
                 } else {
                   print(jsonRes.reasonPhrase);
                 }
 
-                print("Uploaded JSON to IPFS.");
-
-                print("Creating NFT using CandyPay API.");
                 setState(() {
                   buttonText  = "Creating NFT...";
                 });
@@ -266,29 +258,35 @@ class _DisplayAndMintState extends State<DisplayAndMint> {
 
                   if (candyPayResponse.statusCode == 200) {
                     var body = candyPayResponse.body;
-                    print(body);
+
                     setState(() {
                       txUrl = jsonDecode(body)["metadata"]["solana_url"];
                       buttonText  = "Minting NFT...";
                     });
                   } else {
-                    print(candyPayResponse.statusCode);
+
                     setState(() {
                       buttonText  = "Error";
                     });
                   }
                   if (txUrl != "") {
-                    print("Got Transaction. Opening Phantom...");
+
                     setState(() {
                       buttonText  = "Opening Phantom...";
                     });
-                    print(txUrl);
                     final str = txUrl.replaceAll("fun%2F%2F", "fun%2F");
                     await launchUrl(Uri.parse(str));
-                    print("Minting Done.");
+
+                    if (!mounted) return;
+
+                    await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => NFTGallery(publicKey: widget.publicKey),
+                      ),
+                    );
                   }
                 } else {
-                  print("No JSON");
                   setState(() {
                     buttonText  = "Error";
                   });
