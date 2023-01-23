@@ -1,4 +1,4 @@
-# nifty_click_app
+# Niftyclick
 
 A new Flutter project.
 
