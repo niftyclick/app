@@ -45,18 +45,12 @@ class _NFTGalleryState extends State<NFTGallery> {
           List nfts = [];
           http.Response response = await http.get(
             Uri.parse(
-                "https://api.nftport.xyz/v0/solana/accounts/Ss7aGjpwHm3Gg4MVNdXrm5C4GXuMvryCZUayjhPkouc?page_size=50&include=metadata"),
-            headers: {
-              "accept": "application/json",
-              "Authorization": "0478fab5-5d5b-4a3f-a5d7-e56cc570dc33",
-            },
+                "https://api-devnet.magiceden.dev/v2/wallets/${widget.publicKey}/tokens?offset=0&limit=50"),
           );
-          for (var nft in (decoder.convert(response.body)["nfts"] as List)) {
+          for (var nft in (decoder.convert(response.body) as List)) {
             if (nft != null) {
-              if (nft["metadata"] != null) {
-                if (nft["metadata"]["image"] != null) {
-                  nfts.add(nft["metadata"]["image"]);
-                }
+              if (nft["image"] != "") {
+                  nfts.add("${nft["image"]}");
               }
             }
           }

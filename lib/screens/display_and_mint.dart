@@ -31,6 +31,7 @@ class _DisplayAndMintState extends State<DisplayAndMint> {
   String imageIpfs = "";
   String jsonIpfs = "";
   String txUrl = "";
+  String buttonText = "Mint as NFT";
 
   Map<String, String> headers = {
     'Content-Type': 'multipart/form-data',
@@ -187,6 +188,9 @@ class _DisplayAndMintState extends State<DisplayAndMint> {
               ),
               onPressed: () async {
                 print("Uploading Image.");
+                setState(() {
+                  buttonText  = "Uploading Image...";
+                });
                 final bytes = File(widget.imagePath).readAsBytesSync();
                 var ipfsRequest = http.MultipartRequest('POST', ipfsEndpoint);
                 ipfsRequest.headers.addAll(headers);
@@ -206,7 +210,10 @@ class _DisplayAndMintState extends State<DisplayAndMint> {
                 } else {
                   print(res.statusCode);
                 }
-                print("Uploading JSON.");
+                print("Uploading metadata.");
+                setState(() {
+                  buttonText  = "Uploading metadata...";
+                });
                 imageIpfs != "" && widget.publicKey != ""
                     ? await writeCounter(await makeJsonString(_name.text,
                         _description.text, widget.publicKey, imageIpfs))
@@ -234,6 +241,9 @@ class _DisplayAndMintState extends State<DisplayAndMint> {
                 print("Uploaded JSON to IPFS.");
 
                 print("Creating NFT using CandyPay API.");
+                setState(() {
+                  buttonText  = "Creating NFT...";
+                });
 
                 if (jsonIpfs != "") {
                   var candyPayResponse = await http.post(
@@ -253,29 +263,40 @@ class _DisplayAndMintState extends State<DisplayAndMint> {
                     }),
                   );
 
+
                   if (candyPayResponse.statusCode == 200) {
                     var body = candyPayResponse.body;
                     print(body);
                     setState(() {
                       txUrl = jsonDecode(body)["metadata"]["solana_url"];
+                      buttonText  = "Minting NFT...";
                     });
                   } else {
                     print(candyPayResponse.statusCode);
+                    setState(() {
+                      buttonText  = "Error";
+                    });
                   }
-
                   if (txUrl != "") {
                     print("Got Transaction. Opening Phantom...");
+                    setState(() {
+                      buttonText  = "Opening Phantom...";
+                    });
                     print(txUrl);
-                    await launchUrl(Uri.parse(txUrl));
+                    final str = txUrl.replaceAll("fun%2F%2F", "fun%2F");
+                    await launchUrl(Uri.parse(str));
                     print("Minting Done.");
                   }
                 } else {
                   print("No JSON");
+                  setState(() {
+                    buttonText  = "Error";
+                  });
                 }
               },
-              child: const Text('Mint as NFT'),
+              child: Text(buttonText),
             )
-          ],
+          ]
         ),
       ),
     );
