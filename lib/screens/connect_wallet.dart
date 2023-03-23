@@ -47,7 +47,7 @@ class _ConnectWalletState extends State<ConnectWallet> {
       path: '/ul/v1/connect',
       queryParameters: {
         'dapp_encryption_public_key': base58.encode(pk.asTypedList),
-        'cluster': "devnet",
+        'cluster': "mainnet-beta",
         'app_url': "https://phantom.app",
         'redirect_link': 'niftyclick://deeplink.connect',
       },
