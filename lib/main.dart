@@ -17,8 +17,8 @@ Future<void> main() async {
     MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        textTheme: GoogleFonts.latoTextTheme(),
-        fontFamily: GoogleFonts.lato().fontFamily,
+        fontFamily: 'Cabinet Grotesk',
+        scaffoldBackgroundColor: const Color.fromRGBO(34, 34, 34, 1),
       ),
       home: ConnectWallet(
         camera: cameras,

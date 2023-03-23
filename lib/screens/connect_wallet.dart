@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:bs58/bs58.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:nifty_click_app/screens/home_screen.dart';
+import 'package:nifty_click_app/screens/dashboard.dart';
 import 'package:pinenacl/x25519.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -93,7 +93,7 @@ class _ConnectWalletState extends State<ConnectWallet> {
     Future.delayed(const Duration(seconds: 2), () {
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(
-          builder: (context) => HomeScreen(
+          builder: (context) => Dashboard(
             camera: widget.camera,
             publicKey: walletAddr,
           ),
