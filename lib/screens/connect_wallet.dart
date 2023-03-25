@@ -1,7 +1,9 @@
 import 'dart:convert';
 
 import 'package:bs58/bs58.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:nifty_click_app/screens/dashboard.dart';
 import 'package:pinenacl/x25519.dart';
@@ -11,14 +13,9 @@ import 'package:url_launcher/url_launcher.dart';
 import '../deep_link_provider.dart';
 import 'package:nifty_click_app/constants.dart';
 
-import 'package:camera/camera.dart';
-
 class ConnectWallet extends StatefulWidget {
-  final List<CameraDescription> camera;
-
   const ConnectWallet({
     Key? key,
-    required this.camera,
   }) : super(key: key);
 
   @override
@@ -26,7 +23,6 @@ class ConnectWallet extends StatefulWidget {
 }
 
 class _ConnectWalletState extends State<ConnectWallet> {
-  final List<Widget> logs = [];
   late PrivateKey sk;
   late PublicKey pk;
   String walletAddr = "";
@@ -80,21 +76,10 @@ class _ConnectWalletState extends State<ConnectWallet> {
     session = data["session"];
     walletAddr = data["public_key"];
 
-    print(data);
-    logs.add(
-      Text(
-        "Wallet address: ${data["public_key"].toString().substring(0, 16)}...",
-        style: const TextStyle(
-          color: Colors.white,
-        ),
-      ),
-    );
-
     Future.delayed(const Duration(seconds: 2), () {
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(
           builder: (context) => Dashboard(
-            camera: widget.camera,
             publicKey: walletAddr,
           ),
         ),
@@ -103,7 +88,128 @@ class _ConnectWalletState extends State<ConnectWallet> {
     });
   }
 
-  void _disconnect() async {
+  @override
+  Widget build(BuildContext context) {
+    DeepLinkProvider provider = DeepLinkProvider();
+    return Scaffold(
+      body: Stack(
+        children: [
+          Positioned(
+            top: 0,
+            right: 0,
+            left: 0,
+            child: Image.asset(
+              "images/home_screen_bg.png",
+              fit: BoxFit.contain,
+            ),
+          ),
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: Provider<DeepLinkProvider>(
+              create: (context) => provider,
+              dispose: (context, provider) => provider.dispose(),
+              child: StreamBuilder<String>(
+                stream: provider.state,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    Uri redirectedUri = Uri.parse(snapshot.data!);
+                    Map params = redirectedUri.queryParameters;
+                    if (params.containsKey("errorCode")) {
+                      if (kDebugMode) {
+                        print(params["errorMessage"]);
+                      }
+                    } else {
+                      switch (redirectedUri.host.split('.')[1]) {
+                        case 'connect':
+                          _onConnect(params);
+                          break;
+                      }
+                    }
+                  }
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        SvgPicture.asset("images/logo.svg"),
+                        const Padding(
+                          padding: EdgeInsets.fromLTRB(0, 12, 0, 5),
+                          child: Text(
+                            "Welcome to",
+                            style: TextStyle(
+                              color: white,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 40,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                        const Text(
+                          "NiftyClick",
+                          style: TextStyle(
+                            fontWeight: FontWeight.w800,
+                            color: white,
+                            fontSize: 46,
+                          ),
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.fromLTRB(16, 16, 16, 50),
+                          child: Text(
+                            "Mint images as NFT on solana blockchain from your mobile phone",
+                            style: TextStyle(
+                              color: lightSilver,
+                              fontWeight: FontWeight.w500,
+                              fontSize: 16,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: green,
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            shadowColor: Colors.black,
+                            fixedSize: const Size.fromWidth(double.maxFinite),
+                          ),
+                          onPressed: _connect,
+                          child: const Text(
+                            "Connect Phantom Wallet",
+                            style: TextStyle(
+                              color: black,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 18,
+                            ),
+                          ),
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.only(bottom: 18, top: 50),
+                          child: Text(
+                            "© NiftyClick 2023.\nAll rights reserved.",
+                            style: TextStyle(
+                              color: Color.fromRGBO(119, 119, 119, 1),
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+
+/**
+ * void _disconnect() async {
     JsonEncoder encoder = const JsonEncoder();
     Map payload = {
       "session": session,
@@ -134,133 +240,4 @@ class _ConnectWalletState extends State<ConnectWallet> {
       mode: LaunchMode.externalApplication,
     );
   }
-
-  @override
-  Widget build(BuildContext context) {
-    DeepLinkProvider provider = DeepLinkProvider();
-    return MaterialApp(
-        home: Scaffold(
-            appBar: AppBar(
-              automaticallyImplyLeading: false,
-              centerTitle: false,
-              elevation: 0,
-              backgroundColor: lightSilver,
-              title: Text(
-                "NiftyClick",
-                style: TextStyle(
-                  fontSize: size,
-                  color: darkGrey,
-                  fontFamily: GoogleFonts.lato().fontFamily,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-            body: Provider<DeepLinkProvider>(
-              create: (context) => provider,
-              dispose: (context, provider) => provider.dispose(),
-              child: StreamBuilder<String>(
-                stream: provider.state,
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    Uri redirectedUri = Uri.parse(snapshot.data!);
-                    Map params = redirectedUri.queryParameters;
-                    if (params.containsKey("errorCode")) {
-                      print(params["errorMessage"]);
-                    } else {
-                      switch (redirectedUri.host.split('.')[1]) {
-                        case 'connect':
-                          _onConnect(params);
-                          break;
-                        case 'disconnect':
-                          print('disconnected');
-                          break;
-                        default:
-                      }
-                    }
-                  }
-                  return Center(
-                    child: Column(
-                      children: [
-                        // Container(
-                        //   width: MediaQuery.of(context).size.width,
-                        //   height: 400,
-                        //   decoration: const BoxDecoration(
-                        //     color: Colors.black,
-                        //   ),
-                        //   child: SingleChildScrollView(
-                        //     child: Column(
-                        //       crossAxisAlignment: CrossAxisAlignment.start,
-                        //       children: [
-                        //         const Text(
-                        //           "LOGS:",
-                        //           style: TextStyle(
-                        //             color: Colors.white,
-                        //           ),
-                        //         ),
-                        //         ...logs,
-                        //       ],
-                        //     ),
-                        //   ),
-                        // ),
-                        const SizedBox(height: 100),
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: orange,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 20,
-                              vertical: 10,
-                            ),
-                            shadowColor: Colors.black,
-                            textStyle: TextStyle(
-                              color: black,
-                              fontFamily: GoogleFonts.poppins().fontFamily,
-                              fontSize: 17,
-                            ),
-                          ),
-                          onPressed: _connect,
-                          child: const Text("Connect Phantom"),
-                        ),
-                        const SizedBox(height: 40),
-                        // ElevatedButton(
-                        //   style: ElevatedButton.styleFrom(
-                        //     backgroundColor: orange,
-                        //     padding: const EdgeInsets.symmetric(
-                        //       horizontal: 20,
-                        //       vertical: 10,
-                        //     ),
-                        //     shadowColor: Colors.black,
-                        //     textStyle: TextStyle(
-                        //       color: Colors.white,
-                        //       fontFamily: GoogleFonts.poppins().fontFamily,
-                        //       fontSize: 17,
-                        //     ),
-                        //   ),
-                        //   onPressed: () => walletAddr == ""
-                        //       ? ScaffoldMessenger.of(context).showSnackBar(
-                        //           const SnackBar(
-                        //             content: Text(
-                        //               "Please connect wallet first",
-                        //             ),
-                        //             duration: Duration(seconds: 2),
-                        //           ),
-                        //         )
-                        //       : _disconnect(),
-                        //   child: const Text("Disconnect"),
-                        // ),
-                        const SizedBox(height: 450),
-                        Text(
-                          "© NiftyClick 2023.\nAll rights reserved.",
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontFamily: GoogleFonts.nunito().fontFamily,
-                            fontSize: 16,
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              ),
-            )));
-  }
-}
+ */

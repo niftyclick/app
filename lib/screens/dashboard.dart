@@ -2,15 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:nifty_click_app/widgets/dashboard_header.dart';
 import 'package:nifty_click_app/widgets/dashboard_help.dart';
 import 'package:photo_manager/photo_manager.dart';
-import 'package:camera/camera.dart';
 
 class Dashboard extends StatefulWidget {
-  final List<CameraDescription> camera;
   final String publicKey;
 
   const Dashboard({
     Key? key,
-    required this.camera,
     required this.publicKey,
   }) : super(key: key);
 
