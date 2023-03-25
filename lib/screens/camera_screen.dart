@@ -1,4 +1,3 @@
-// ignore_for_file: avoid_print
 import 'package:path_provider/path_provider.dart' as path;
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
