@@ -62,31 +62,34 @@ class _NFTGalleryState extends State<NFTGallery> {
                   crossAxisSpacing: 16,
                   children: snapshot.data!
                       .map(
-                        (nft) => Container(
-                          decoration: BoxDecoration(
-                            color: Colors.black,
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(16),
-                            child: CachedNetworkImage(
-                              imageUrl: nft.toString(),
-                              placeholder: (context, url) {
-                                return Shimmer.fromColors(
-                                  baseColor:
-                                      const Color.fromRGBO(34, 34, 34, 1),
-                                  highlightColor:
-                                      const Color.fromARGB(255, 55, 58, 63),
-                                  period: const Duration(milliseconds: 850),
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      color:
-                                          const Color.fromRGBO(34, 34, 34, 1),
-                                      borderRadius: BorderRadius.circular(16),
+                        (nft) => GestureDetector(
+                          onTap: () {},
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.black,
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(16),
+                              child: CachedNetworkImage(
+                                imageUrl: nft.toString(),
+                                placeholder: (context, url) {
+                                  return Shimmer.fromColors(
+                                    baseColor:
+                                        const Color.fromRGBO(34, 34, 34, 1),
+                                    highlightColor:
+                                        const Color.fromARGB(255, 55, 58, 63),
+                                    period: const Duration(milliseconds: 850),
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        color:
+                                            const Color.fromRGBO(34, 34, 34, 1),
+                                        borderRadius: BorderRadius.circular(16),
+                                      ),
                                     ),
-                                  ),
-                                );
-                              },
+                                  );
+                                },
+                              ),
                             ),
                           ),
                         ),

@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:nifty_click_app/screens/display_and_mint.dart';
-import 'package:nifty_click_app/screens/nft_gallery.dart';
 
 class DashboardHeader extends StatefulWidget {
   final String publicKey;
@@ -106,19 +105,17 @@ class _DashboardHeaderState extends State<DashboardHeader> {
                           TextButton(
                             onPressed: () async {
                               try {
-                                // final image = await _picker.pickImage(
-                                //   source: ImageSource.gallery,
-                                // );
-                                // if (!mounted) return;
+                                final image = await _picker.pickImage(
+                                  source: ImageSource.gallery,
+                                );
+                                if (!mounted) return;
                                 await Navigator.of(context).push(
                                   MaterialPageRoute(
-                                      builder: (context) => NFTGallery(
-                                          publicKey: widget.publicKey)
-                                      // DisplayAndMint(
-                                      //   imagePath: image!.path,
-                                      //   publicKey: widget.publicKey,
-                                      // ),
-                                      ),
+                                    builder: (context) => DisplayAndMint(
+                                      imagePath: image!.path,
+                                      publicKey: widget.publicKey,
+                                    ),
+                                  ),
                                 );
                               } catch (e) {
                                 if (kDebugMode) {
