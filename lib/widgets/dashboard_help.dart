@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:nifty_click_app/shared_prefs.dart';
 
 class DashboardHelp extends StatelessWidget {
   const DashboardHelp({super.key});
 
   @override
   Widget build(BuildContext context) {
+    SharedPrefs.setIsFirstOpen();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -103,7 +105,7 @@ class DashboardHelp extends StatelessWidget {
                           ),
                         ),
                         TextSpan(
-                          text: "your select image",
+                          text: "your selected image",
                           style: TextStyle(
                             color: Color.fromRGBO(119, 119, 119, 1),
                           ),

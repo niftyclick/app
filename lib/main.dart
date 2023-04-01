@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:nifty_click_app/screens/connect_wallet.dart';
+import 'package:nifty_click_app/shared_prefs.dart';
 
 Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  SharedPrefs.init();
   runApp(
     MaterialApp(
       debugShowCheckedModeBanner: false,

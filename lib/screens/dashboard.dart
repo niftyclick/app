@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:nifty_click_app/screens/nft_gallery.dart';
+import 'package:nifty_click_app/shared_prefs.dart';
 import 'package:nifty_click_app/widgets/dashboard_header.dart';
 import 'package:nifty_click_app/widgets/dashboard_help.dart';
 import 'package:photo_manager/photo_manager.dart';
@@ -64,7 +66,21 @@ class _DashboardState extends State<Dashboard> {
                 ),
               ),
               DashboardHeader(publicKey: widget.publicKey),
-              const DashboardHelp(),
+              if (SharedPrefs.getFirstOpen() == null) const DashboardHelp(),
+              if (SharedPrefs.getFirstOpen() != null &&
+                  SharedPrefs.getFirstOpen() == false) ...[
+                const Text(
+                  "NFT Gallery",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 24,
+                  ),
+                ),
+                NFTGallery(
+                  publicKey: widget.publicKey,
+                )
+              ]
             ],
           ),
         ),
