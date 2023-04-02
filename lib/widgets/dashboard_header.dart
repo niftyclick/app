@@ -147,7 +147,7 @@ class _DashboardHeaderState extends State<DashboardHeader> {
                   },
                   isScrollControlled: false,
                   enableDrag: false,
-                  backgroundColor: const Color.fromRGBO(54, 54, 54, 0.4),
+                  backgroundColor: const Color.fromRGBO(54, 54, 54, 0.9),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(24),
                     side: const BorderSide(

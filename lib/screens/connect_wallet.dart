@@ -4,7 +4,6 @@ import 'package:bs58/bs58.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:nifty_click_app/screens/dashboard.dart';
 import 'package:pinenacl/x25519.dart';
 import 'package:provider/provider.dart';
@@ -43,7 +42,7 @@ class _ConnectWalletState extends State<ConnectWallet> {
       path: '/ul/v1/connect',
       queryParameters: {
         'dapp_encryption_public_key': base58.encode(pk.asTypedList),
-        'cluster': "mainnet-beta",
+        'cluster': "devnet",
         'app_url': "https://phantom.app",
         'redirect_link': 'niftyclick://deeplink.connect',
       },

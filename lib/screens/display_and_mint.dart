@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:nifty_click_app/screens/nft_gallery.dart';
+import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart' as path;
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -26,6 +25,7 @@ class DisplayAndMint extends StatefulWidget {
 class _DisplayAndMintState extends State<DisplayAndMint> {
   final TextEditingController _name = TextEditingController();
   final TextEditingController _description = TextEditingController();
+  bool _loading = false;
   String cid = "";
   String imageIpfs = "";
   String jsonIpfs = "";
@@ -106,177 +106,326 @@ class _DisplayAndMintState extends State<DisplayAndMint> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        centerTitle: false,
-        elevation: 0,
-        backgroundColor: lightSilver,
-        title: Text(
-          "Mint",
-          style: TextStyle(
-            fontSize: size,
-            color: darkGrey,
-            fontFamily: GoogleFonts.lato().fontFamily,
-            fontWeight: FontWeight.w600,
+    return SafeArea(
+      child: GestureDetector(
+        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+        child: Scaffold(
+          appBar: PreferredSize(
+            preferredSize: Size.fromHeight(
+              MediaQuery.of(context).size.height * 0.2,
+            ),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 28),
+              child: Stack(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(14),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: const Color.fromRGBO(128, 128, 128, 0.4),
+                          ),
+                        ),
+                        child: const Icon(
+                          Icons.arrow_back_ios_rounded,
+                          color: Colors.white,
+                          size: 18,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const Positioned.fill(
+                    child: Center(
+                      child: Text(
+                        'Mint NFT',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 24,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
-        ),
-      ),
-      body: Container(
-        margin: const EdgeInsets.fromLTRB(19.0, 0.0, 15.0, 0.0),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const SizedBox(height: 20),
-              Image.file(
-                File(widget.imagePath),
-                height: 200,
+          body: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: double.maxFinite,
+                    decoration: BoxDecoration(
+                      color: Colors.black,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Image.file(
+                        File(widget.imagePath),
+                        height: MediaQuery.of(context).size.height * 0.37,
+                      ),
+                    ),
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.only(
+                      top: 24,
+                      bottom: 12,
+                    ),
+                    child: Text(
+                      "NFT Title",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 18,
+                      ),
+                    ),
+                  ),
+                  TextField(
+                    style: const TextStyle(
+                      color: white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    controller: _name,
+                    obscureText: false,
+                    textAlign: TextAlign.left,
+                    decoration: InputDecoration(
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: const BorderSide(
+                          color: Color.fromRGBO(119, 119, 119, 0.4),
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: const BorderSide(
+                          color: Color.fromRGBO(119, 119, 119, 0.4),
+                        ),
+                      ),
+                      hintText: 'Pick a cool name for the NFT',
+                      hintStyle: const TextStyle(
+                        color: Color.fromRGBO(136, 136, 136, 1),
+                      ),
+                    ),
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.only(
+                      top: 24,
+                      bottom: 12,
+                    ),
+                    child: Text(
+                      "NFT Description",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 18,
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.11,
+                    child: TextField(
+                      style: const TextStyle(
+                        color: white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      minLines: 3,
+                      maxLines: 5,
+                      controller: _description,
+                      decoration: InputDecoration(
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(
+                            color: Color.fromRGBO(119, 119, 119, 0.4),
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(
+                            color: Color.fromRGBO(119, 119, 119, 0.4),
+                          ),
+                        ),
+                        hintText: 'Write a description for your NFT here...',
+                        hintStyle: const TextStyle(
+                          color: Color.fromRGBO(136, 136, 136, 1),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 32),
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: green,
+                        fixedSize: const Size.fromWidth(double.maxFinite),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        disabledBackgroundColor:
+                            const Color.fromRGBO(119, 119, 119, 1),
+                      ),
+                      onPressed: _name.text != "" && _description.text != ""
+                          ? () async {
+                              setState(() {
+                                _loading = true;
+                              });
+                              final bytes =
+                                  File(widget.imagePath).readAsBytesSync();
+                              var ipfsRequest =
+                                  http.MultipartRequest('POST', ipfsEndpoint);
+                              ipfsRequest.headers.addAll(headers);
+                              ipfsRequest.files.add(
+                                http.MultipartFile.fromBytes('file', bytes,
+                                    filename: _name.text),
+                              );
+                              var res = await ipfsRequest.send();
+                              if (res.statusCode == 200) {
+                                var response = await res.stream.bytesToString();
+                                setState(() {
+                                  cid = jsonDecode(response)['cid'];
+                                  imageIpfs = "https://$cid.ipfs.w3s.link";
+                                });
+                                if (kDebugMode) {
+                                  print(imageIpfs);
+                                  print("Image uploaded to IPFS.");
+                                }
+                              } else {
+                                if (kDebugMode) {
+                                  print(res.statusCode);
+                                }
+                              }
+                              if (kDebugMode) {
+                                print("Uploading JSON.");
+                              }
+                              imageIpfs != "" && widget.publicKey != ""
+                                  ? await writeCounter(await makeJsonString(
+                                      _name.text,
+                                      _description.text,
+                                      widget.publicKey,
+                                      imageIpfs))
+                                  : print("No image");
+                              final jsonFile = await _localFile;
+                              setState(() {});
+                              final jsonBytes = jsonFile.readAsBytesSync();
+                              var jsonRequest =
+                                  http.MultipartRequest('POST', ipfsEndpoint);
+                              jsonRequest.headers.addAll(headers);
+                              jsonRequest.files.add(
+                                  http.MultipartFile.fromBytes(
+                                      'file', jsonBytes,
+                                      filename: "metadata.json"));
+                              var jsonRes = await jsonRequest.send();
+                              if (jsonRes.statusCode == 200) {
+                                var response =
+                                    await jsonRes.stream.bytesToString();
+                                setState(() {
+                                  cid = jsonDecode(response)["cid"];
+                                  jsonIpfs = "https://$cid.ipfs.w3s.link";
+                                });
+                                if (kDebugMode) {
+                                  print(jsonIpfs);
+                                }
+                              } else {
+                                if (kDebugMode) {
+                                  print(jsonRes.reasonPhrase);
+                                }
+                              }
+
+                              if (kDebugMode) {
+                                print("Uploaded JSON to IPFS.");
+                                print("Creating NFT using CandyPay API.");
+                              }
+
+                              if (jsonIpfs != "") {
+                                var candyPayResponse = await http.post(
+                                  candyPayEndpoint,
+                                  headers: <String, String>{
+                                    'Content-Type': 'application/json',
+                                    'Authorization':
+                                        'Bearer xDBywyRp4y75oVxYQBby3',
+                                  },
+                                  body: jsonEncode(<String, dynamic>{
+                                    "name": _name.text,
+                                    "symbol": getSymbol(_name.text),
+                                    "uri": jsonIpfs,
+                                    "collection_size": 1,
+                                    "seller_fee": 10,
+                                    "network": "devnet",
+                                    "label": "Niftyclick"
+                                  }),
+                                );
+
+                                if (candyPayResponse.statusCode == 200) {
+                                  var body = candyPayResponse.body;
+                                  if (kDebugMode) {
+                                    print(body);
+                                  }
+                                  setState(() {
+                                    txUrl = jsonDecode(body)["metadata"]
+                                        ["solana_url"];
+                                  });
+                                } else {
+                                  if (kDebugMode) {
+                                    print(candyPayResponse.statusCode);
+                                  }
+                                }
+
+                                if (txUrl != "") {
+                                  if (kDebugMode) {
+                                    print(
+                                        "Got Transaction. Opening Phantom...");
+                                    print(txUrl);
+                                  }
+
+                                  await launchUrl(Uri.parse(txUrl));
+                                  if (kDebugMode) {
+                                    print("Minting Done.");
+                                  }
+                                }
+                              } else {
+                                if (kDebugMode) {
+                                  print("No JSON");
+                                }
+                              }
+                            }
+                          : null,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            'Mint as NFT',
+                            style: TextStyle(
+                              color: _name.text != "" && _description.text != ""
+                                  ? black
+                                  : const Color.fromRGBO(194, 194, 194, 1),
+                              fontWeight: FontWeight.w700,
+                              fontSize: 18,
+                            ),
+                          ),
+                          if (_loading)
+                            Container(
+                              margin: const EdgeInsets.only(left: 6),
+                              height: 16,
+                              width: 16,
+                              child: const CircularProgressIndicator(
+                                color: black,
+                                strokeWidth: 2,
+                              ),
+                            )
+                        ],
+                      ),
+                    ),
+                  )
+                ],
               ),
-              const SizedBox(height: 20),
-              TextField(
-                style: GoogleFonts.poppins(
-                  textStyle: const TextStyle(
-                    color: black,
-                    fontSize: 15,
-                  ),
-                ),
-                controller: _name,
-                obscureText: false,
-                textAlign: TextAlign.left,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: black, width: 1.0),
-                  ),
-                  hintText: 'NFT Title',
-                  hintStyle: TextStyle(color: Colors.grey),
-                ),
-              ),
-              const SizedBox(height: 15),
-              TextField(
-                style: GoogleFonts.montserrat(
-                  textStyle: const TextStyle(
-                    color: black,
-                    fontSize: 15,
-                  ),
-                ),
-                controller: _description,
-                obscureText: false,
-                textAlign: TextAlign.left,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: black, width: 1.0),
-                  ),
-                  hintText: 'Description',
-                  hintStyle: TextStyle(color: Colors.grey),
-                ),
-              ),
-              const SizedBox(height: 10),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: orange,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 10,
-                  ),
-                  textStyle: TextStyle(
-                      color: lightSilver,
-                      fontFamily: GoogleFonts.poppins().fontFamily,
-                      fontSize: 17),
-                ),
-                onPressed: () async {
-                  print("Uploading Image.");
-                  final bytes = File(widget.imagePath).readAsBytesSync();
-                  var ipfsRequest = http.MultipartRequest('POST', ipfsEndpoint);
-                  ipfsRequest.headers.addAll(headers);
-                  ipfsRequest.files.add(
-                    http.MultipartFile.fromBytes('file', bytes,
-                        filename: _name.text),
-                  );
-                  var res = await ipfsRequest.send();
-                  if (res.statusCode == 200) {
-                    var response = await res.stream.bytesToString();
-                    setState(() {
-                      cid = jsonDecode(response)['cid'];
-                      imageIpfs = "https://$cid.ipfs.w3s.link";
-                    });
-                    print(imageIpfs);
-                    print("Image uploaded to IPFS.");
-                  } else {
-                    print(res.statusCode);
-                  }
-                  print("Uploading JSON.");
-                  imageIpfs != "" && widget.publicKey != ""
-                      ? await writeCounter(await makeJsonString(_name.text,
-                          _description.text, widget.publicKey, imageIpfs))
-                      : print("No image");
-                  final jsonFile = await _localFile;
-                  setState(() {});
-                  final jsonBytes = jsonFile.readAsBytesSync();
-                  var jsonRequest = http.MultipartRequest('POST', ipfsEndpoint);
-                  jsonRequest.headers.addAll(headers);
-                  jsonRequest.files.add(http.MultipartFile.fromBytes(
-                      'file', jsonBytes,
-                      filename: "metadata.json"));
-                  var jsonRes = await jsonRequest.send();
-                  if (jsonRes.statusCode == 200) {
-                    var response = await jsonRes.stream.bytesToString();
-                    setState(() {
-                      cid = jsonDecode(response)["cid"];
-                      jsonIpfs = "https://$cid.ipfs.w3s.link";
-                    });
-                    print(jsonIpfs);
-                  } else {
-                    print(jsonRes.reasonPhrase);
-                  }
-
-                  print("Uploaded JSON to IPFS.");
-
-                  print("Creating NFT using CandyPay API.");
-
-                  if (jsonIpfs != "") {
-                    var candyPayResponse = await http.post(
-                      candyPayEndpoint,
-                      headers: <String, String>{
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Bearer xDBywyRp4y75oVxYQBby3',
-                      },
-                      body: jsonEncode(<String, dynamic>{
-                        "name": _name.text,
-                        "symbol": getSymbol(_name.text),
-                        "uri": jsonIpfs,
-                        "collection_size": 1,
-                        "seller_fee": 10,
-                        "network": "devnet",
-                        "label": "Niftyclick"
-                      }),
-                    );
-
-                    if (candyPayResponse.statusCode == 200) {
-                      var body = candyPayResponse.body;
-                      print(body);
-                      setState(() {
-                        txUrl = jsonDecode(body)["metadata"]["solana_url"];
-                      });
-                    } else {
-                      print(candyPayResponse.statusCode);
-                    }
-
-                    if (txUrl != "") {
-                      print("Got Transaction. Opening Phantom...");
-                      print(txUrl);
-                      await launchUrl(Uri.parse(txUrl));
-                      print("Minting Done.");
-                    }
-                  } else {
-                    print("No JSON");
-                  }
-                },
-                child: const Text('Mint as NFT'),
-              )
-            ],
+            ),
           ),
         ),
       ),
