@@ -1,9 +1,11 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:bs58/bs58.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart' as path;
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:pinenacl/x25519.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:nifty_click_app/constants.dart';
@@ -11,11 +13,17 @@ import 'package:nifty_click_app/constants.dart';
 class DisplayAndMint extends StatefulWidget {
   final String imagePath;
   final String publicKey;
+  final PublicKey dappKey;
+  final Box sharedSecret;
+  final String session;
 
   const DisplayAndMint({
     Key? key,
     required this.imagePath,
     required this.publicKey,
+    required this.dappKey,
+    required this.sharedSecret,
+    required this.session,
   }) : super(key: key);
 
   @override
@@ -276,124 +284,68 @@ class _DisplayAndMintState extends State<DisplayAndMint> {
                               setState(() {
                                 _loading = true;
                               });
-                              final bytes =
-                                  File(widget.imagePath).readAsBytesSync();
-                              var ipfsRequest =
-                                  http.MultipartRequest('POST', ipfsEndpoint);
-                              ipfsRequest.headers.addAll(headers);
-                              ipfsRequest.files.add(
-                                http.MultipartFile.fromBytes('file', bytes,
-                                    filename: _name.text),
+                              JsonEncoder encoder = const JsonEncoder();
+                              final res = await http.post(
+                                Uri(
+                                  scheme: "https",
+                                  host:
+                                      "nft-api-production-b9b4.up.railway.app",
+                                  path: "create",
+                                ),
+                                body: jsonEncode({
+                                  "account": widget.publicKey,
+                                  "name": "example",
+                                  "symbol": "LFG",
+                                  "seller_fee": "1",
+                                  "uri":
+                                      "https://bafybeicl47zvqxrqnv357pbxyojszcbs6nznxktj3a6dr7wxtuxpqu3bcm.ipfs.dweb.link/metadata.json",
+                                  "network": "devnet",
+                                  "is_base64": false
+                                }),
+                                headers: {"Content-Type": "application/json"},
                               );
-                              var res = await ipfsRequest.send();
-                              if (res.statusCode == 200) {
-                                var response = await res.stream.bytesToString();
-                                setState(() {
-                                  cid = jsonDecode(response)['cid'];
-                                  imageIpfs = "https://$cid.ipfs.w3s.link";
-                                });
-                                if (kDebugMode) {
-                                  print(imageIpfs);
-                                  print("Image uploaded to IPFS.");
-                                }
-                              } else {
-                                if (kDebugMode) {
-                                  print(res.statusCode);
-                                }
-                              }
-                              if (kDebugMode) {
-                                print("Uploading JSON.");
-                              }
-                              imageIpfs != "" && widget.publicKey != ""
-                                  ? await writeCounter(await makeJsonString(
-                                      _name.text,
-                                      _description.text,
-                                      widget.publicKey,
-                                      imageIpfs))
-                                  : print("No image");
-                              final jsonFile = await _localFile;
-                              setState(() {});
-                              final jsonBytes = jsonFile.readAsBytesSync();
-                              var jsonRequest =
-                                  http.MultipartRequest('POST', ipfsEndpoint);
-                              jsonRequest.headers.addAll(headers);
-                              jsonRequest.files.add(
-                                  http.MultipartFile.fromBytes(
-                                      'file', jsonBytes,
-                                      filename: "metadata.json"));
-                              var jsonRes = await jsonRequest.send();
-                              if (jsonRes.statusCode == 200) {
-                                var response =
-                                    await jsonRes.stream.bytesToString();
-                                setState(() {
-                                  cid = jsonDecode(response)["cid"];
-                                  jsonIpfs = "https://$cid.ipfs.w3s.link";
-                                });
-                                if (kDebugMode) {
-                                  print(jsonIpfs);
-                                }
-                              } else {
-                                if (kDebugMode) {
-                                  print(jsonRes.reasonPhrase);
-                                }
-                              }
+                              var nonce = PineNaClUtils.randombytes(24);
 
-                              if (kDebugMode) {
-                                print("Uploaded JSON to IPFS.");
-                                print("Creating NFT using CandyPay API.");
-                              }
+                              List<int> data = List<int>.from(
+                                  jsonDecode(res.body)["transaction"]["data"]);
 
-                              if (jsonIpfs != "") {
-                                var candyPayResponse = await http.post(
-                                  candyPayEndpoint,
-                                  headers: <String, String>{
-                                    'Content-Type': 'application/json',
-                                    'Authorization':
-                                        'Bearer xDBywyRp4y75oVxYQBby3',
-                                  },
-                                  body: jsonEncode(<String, dynamic>{
-                                    "name": _name.text,
-                                    "symbol": getSymbol(_name.text),
-                                    "uri": jsonIpfs,
-                                    "collection_size": 1,
-                                    "seller_fee": 10,
-                                    "network": "devnet",
-                                    "label": "Niftyclick"
-                                  }),
-                                );
+                              Map payload = {
+                                "transaction": base58.encode(
+                                  Uint8List.fromList(data),
+                                ),
+                                "session": widget.session,
+                              };
+                              final encryptedMsg = widget.sharedSecret
+                                  .encrypt(
+                                    encoder
+                                        .convert(payload)
+                                        .codeUnits
+                                        .toUint8List(),
+                                    nonce: nonce,
+                                  )
+                                  .cipherText;
+                              Uri url = Uri(
+                                scheme: 'https',
+                                host: 'phantom.app',
+                                path: '/ul/v1/signAndSendTransaction',
+                                queryParameters: {
+                                  'dapp_encryption_public_key':
+                                      base58.encode(widget.dappKey.asTypedList),
+                                  'nonce': base58.encode(nonce),
+                                  'redirect_link':
+                                      'niftyclick://deeplink.onSignAndSendTransaction',
+                                  'payload':
+                                      base58.encode(encryptedMsg.toUint8List()),
+                                },
+                              );
+                              launchUrl(
+                                url,
+                                mode: LaunchMode.externalApplication,
+                              );
 
-                                if (candyPayResponse.statusCode == 200) {
-                                  var body = candyPayResponse.body;
-                                  if (kDebugMode) {
-                                    print(body);
-                                  }
-                                  setState(() {
-                                    txUrl = jsonDecode(body)["metadata"]
-                                        ["solana_url"];
-                                  });
-                                } else {
-                                  if (kDebugMode) {
-                                    print(candyPayResponse.statusCode);
-                                  }
-                                }
-
-                                if (txUrl != "") {
-                                  if (kDebugMode) {
-                                    print(
-                                        "Got Transaction. Opening Phantom...");
-                                    print(txUrl);
-                                  }
-
-                                  await launchUrl(Uri.parse(txUrl));
-                                  if (kDebugMode) {
-                                    print("Minting Done.");
-                                  }
-                                }
-                              } else {
-                                if (kDebugMode) {
-                                  print("No JSON");
-                                }
-                              }
+                              setState(() {
+                                _loading = false;
+                              });
                             }
                           : null,
                       child: Row(
@@ -432,3 +384,121 @@ class _DisplayAndMintState extends State<DisplayAndMint> {
     );
   }
 }
+// final bytes =
+//     File(widget.imagePath).readAsBytesSync();
+// var ipfsRequest =
+//     http.MultipartRequest('POST', ipfsEndpoint);
+// ipfsRequest.headers.addAll(headers);
+// ipfsRequest.files.add(
+//   http.MultipartFile.fromBytes('file', bytes,
+//       filename: _name.text),
+// );
+// var res = await ipfsRequest.send();
+// if (res.statusCode == 200) {
+//   var response = await res.stream.bytesToString();
+//   setState(() {
+//     cid = jsonDecode(response)['cid'];
+//     imageIpfs = "https://$cid.ipfs.w3s.link";
+//   });
+//   if (kDebugMode) {
+//     print(imageIpfs);
+//     print("Image uploaded to IPFS.");
+//   }
+// } else {
+//   if (kDebugMode) {
+//     print(res.statusCode);
+//   }
+// }
+// if (kDebugMode) {
+//   print("Uploading JSON.");
+// }
+// imageIpfs != "" && widget.publicKey != ""
+//     ? await writeCounter(await makeJsonString(
+//         _name.text,
+//         _description.text,
+//         widget.publicKey,
+//         imageIpfs))
+//     : print("No image");
+// final jsonFile = await _localFile;
+// setState(() {});
+// final jsonBytes = jsonFile.readAsBytesSync();
+// var jsonRequest =
+//     http.MultipartRequest('POST', ipfsEndpoint);
+// jsonRequest.headers.addAll(headers);
+// jsonRequest.files.add(
+//     http.MultipartFile.fromBytes(
+//         'file', jsonBytes,
+//         filename: "metadata.json"));
+// var jsonRes = await jsonRequest.send();
+// if (jsonRes.statusCode == 200) {
+//   var response =
+//       await jsonRes.stream.bytesToString();
+//   setState(() {
+//     cid = jsonDecode(response)["cid"];
+//     jsonIpfs = "https://$cid.ipfs.w3s.link";
+//   });
+//   if (kDebugMode) {
+//     print(jsonIpfs);
+//   }
+// } else {
+//   if (kDebugMode) {
+//     print(jsonRes.reasonPhrase);
+//   }
+// }
+
+// if (kDebugMode) {
+//   print("Uploaded JSON to IPFS.");
+//   print("Creating NFT using CandyPay API.");
+// }
+
+// if (jsonIpfs != "") {
+//   var candyPayResponse = await http.post(
+//     candyPayEndpoint,
+//     headers: <String, String>{
+//       'Content-Type': 'application/json',
+//       'Authorization':
+//           'Bearer xDBywyRp4y75oVxYQBby3',
+//     },
+//     body: jsonEncode(<String, dynamic>{
+//       "name": _name.text,
+//       "symbol": getSymbol(_name.text),
+//       "uri": jsonIpfs,
+//       "collection_size": 1,
+//       "seller_fee": 10,
+//       "network": "devnet",
+//       "label": "Niftyclick"
+//     }),
+//   );
+
+//   if (candyPayResponse.statusCode == 200) {
+//     var body = candyPayResponse.body;
+//     if (kDebugMode) {
+//       print(body);
+//     }
+//     setState(() {
+//       txUrl = jsonDecode(body)["metadata"]
+//           ["solana_url"];
+//     });
+//   } else {
+//     if (kDebugMode) {
+//       print(candyPayResponse.statusCode);
+//     }
+//   }
+
+//   if (txUrl != "") {
+//     if (kDebugMode) {
+//       print(
+//           "Got Transaction. Opening Phantom...");
+//       print(txUrl);
+//     }
+
+//     await launchUrl(Uri.parse(txUrl));
+//     if (kDebugMode) {
+//       print("Minting Done.");
+//     }
+//   }
+// } else {
+//   if (kDebugMode) {
+//     print("No JSON");
+//   }
+// }

@@ -2,13 +2,20 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:nifty_click_app/screens/display_and_mint.dart';
+import 'package:pinenacl/x25519.dart';
 
 class DashboardHeader extends StatefulWidget {
   final String publicKey;
+  final PublicKey dappKey;
+  final Box sharedSecret;
+  final String session;
 
   const DashboardHeader({
     super.key,
     required this.publicKey,
+    required this.dappKey,
+    required this.sharedSecret,
+    required this.session,
   });
 
   @override
@@ -80,6 +87,9 @@ class _DashboardHeaderState extends State<DashboardHeader> {
                                   builder: (context) => DisplayAndMint(
                                     imagePath: image!.path,
                                     publicKey: widget.publicKey,
+                                    dappKey: widget.dappKey,
+                                    sharedSecret: widget.sharedSecret,
+                                    session: widget.session,
                                   ),
                                 ),
                               );
@@ -114,6 +124,9 @@ class _DashboardHeaderState extends State<DashboardHeader> {
                                     builder: (context) => DisplayAndMint(
                                       imagePath: image!.path,
                                       publicKey: widget.publicKey,
+                                      dappKey: widget.dappKey,
+                                      sharedSecret: widget.sharedSecret,
+                                      session: widget.session,
                                     ),
                                   ),
                                 );

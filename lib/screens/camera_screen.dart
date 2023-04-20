@@ -201,15 +201,15 @@ class _CameraScreenState extends State<CameraScreen> {
 
                     if (!mounted) return;
 
-                    await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => DisplayAndMint(
-                          imagePath: pathImage,
-                          publicKey: widget.publicKey,
-                        ),
-                      ),
-                    );
+                    // await Navigator.push(
+                    //   context,
+                    //   MaterialPageRoute(
+                    //     builder: (context) => DisplayAndMint(
+                    //       imagePath: pathImage,
+                    //       publicKey: widget.publicKey,
+                    //     ),
+                    //   ),
+                    // );
                   } catch (e) {
                     if (kDebugMode) {
                       print(e);

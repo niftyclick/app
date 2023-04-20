@@ -4,13 +4,20 @@ import 'package:nifty_click_app/shared_prefs.dart';
 import 'package:nifty_click_app/widgets/dashboard_header.dart';
 import 'package:nifty_click_app/widgets/dashboard_help.dart';
 import 'package:photo_manager/photo_manager.dart';
+import 'package:pinenacl/x25519.dart';
 
 class Dashboard extends StatefulWidget {
   final String publicKey;
+  final PublicKey dappKey;
+  final Box sharedSecret;
+  final String session;
 
   const Dashboard({
     Key? key,
     required this.publicKey,
+    required this.dappKey,
+    required this.sharedSecret,
+    required this.session,
   }) : super(key: key);
 
   @override
@@ -65,7 +72,12 @@ class _DashboardState extends State<Dashboard> {
                   ],
                 ),
               ),
-              DashboardHeader(publicKey: widget.publicKey),
+              DashboardHeader(
+                publicKey: widget.publicKey,
+                dappKey: widget.dappKey,
+                sharedSecret: widget.sharedSecret,
+                session: widget.session,
+              ),
               if (SharedPrefs.getFirstOpen() == null) const DashboardHelp(),
               if (SharedPrefs.getFirstOpen() != null &&
                   SharedPrefs.getFirstOpen() == false) ...[
