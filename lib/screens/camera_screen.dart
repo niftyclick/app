@@ -11,8 +11,6 @@ import '../deep_link_provider.dart';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
-// import 'package:image_picker/image_picker.dart';
-import 'package:nifty_click_app/screens/display_and_mint.dart';
 
 class CameraScreen extends StatefulWidget {
   final List<CameraDescription> camera;

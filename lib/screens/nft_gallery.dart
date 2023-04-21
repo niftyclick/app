@@ -18,7 +18,7 @@ class NFTGallery extends StatefulWidget {
 }
 
 class _NFTGalleryState extends State<NFTGallery> {
-  final JsonDecoder decoder = JsonDecoder();
+  final JsonDecoder decoder = const JsonDecoder();
 
   @override
   Widget build(BuildContext context) {
