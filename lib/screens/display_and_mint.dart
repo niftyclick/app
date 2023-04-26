@@ -373,7 +373,7 @@ class _DisplayAndMintState extends State<DisplayAndMint> {
                                     "symbol": getSymbol(_name.text),
                                     "seller_fee": "10",
                                     "uri": jsonIpfs,
-                                    "network": "devnet",
+                                    "network": "mainnet-beta",
                                     "is_base64": false
                                   }),
                                   headers: {"Content-Type": "application/json"},
