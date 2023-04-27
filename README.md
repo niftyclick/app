@@ -1,17 +1,15 @@
-# Niftyclick
+![NiftyClick](./images/Thumbnail.png)
 
-A new Flutter project.
+Setup:
 
-## Getting Started
+```
+git clone https://github.com/niftyclick/app
 
-This project is a starting point for a Flutter application.
+cd app
 
-A few resources to get you started if this is your first Flutter project:
+flutter install
+```
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+Environment variables are required. They are mentioned in the `.env.example` file.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
-
+Built by @arihantbansal, @ritvij14 & @priyansh71
